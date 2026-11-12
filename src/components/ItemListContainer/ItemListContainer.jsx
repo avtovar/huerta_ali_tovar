@@ -16,7 +16,7 @@ const normalizar = (t) => t.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase
 //  - saludo: título de la sección
 //  - limite: si se indica (ej. en Home), muestra solo esa cantidad, sin búsqueda ni paginador
 function ItemListContainer({ saludo, limite }) {
-  const { productos, cargando, error, recargar } = useProductos()
+  const { productos, cargando, error, aviso, recargar } = useProductos()
   const [busqueda, setBusqueda] = useState('')
   const [categoria, setCategoria] = useState('')
   const [pagina, setPagina] = useState(1)
@@ -48,6 +48,7 @@ function ItemListContainer({ saludo, limite }) {
   return (
     <div className="item-list-container">
       {saludo && <h2 className="section-title">{saludo}</h2>}
+      {aviso && <p className="mensaje mensaje-aviso" role="status">{aviso}</p>}
 
       {!limite && !cargando && !error && (
         <SearchBar

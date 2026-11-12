@@ -7,8 +7,23 @@ import {
   collection, doc, getDocs, getDoc, addDoc, updateDoc, deleteDoc, writeBatch,
 } from 'firebase/firestore'
 import { db } from '../firebase/config'
+import { rutaPublica } from '../utils/rutasPublicas'
 
 const coleccion = collection(db, 'productos')
+
+export async function obtenerProductosIniciales() {
+  const respuesta = await fetch(rutaPublica('productos.json'))
+  if (!respuesta.ok) {
+    throw new Error(`No se pudo cargar el catálogo inicial (HTTP ${respuesta.status}).`)
+  }
+
+  const productos = await respuesta.json()
+  if (!Array.isArray(productos)) {
+    throw new Error('El catálogo inicial no tiene un formato válido.')
+  }
+
+  return productos
+}
 
 // Normaliza lo que viene de un formulario (todo texto) a los tipos correctos
 function limpiar(datos) {

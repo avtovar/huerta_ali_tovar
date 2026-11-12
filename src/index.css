@@ -201,6 +201,12 @@ img {
   padding: 12px 16px;
 }
 
+.mensaje-aviso {
+  background-color: rgba(134, 169, 139, 0.12);
+  border: 1px solid var(--color-border);
+  color: var(--color-text-soft);
+}
+
 .mensaje-error {
   background-color: rgba(229, 168, 168, 0.15);
   border: 1px solid var(--color-accent);

@@ -54,6 +54,8 @@ Otros comandos: `npm run build` (genera `dist/`) y `npm run preview`.
 
 ## Configuración de Firebase (una sola vez)
 
+El catálogo público muestra los productos de `public/productos.json` si Firebase no está configurado, Firestore está vacío o no se puede conectar. Al configurar Firestore y cargar productos, usa los datos de esa colección.
+
 1. En la [consola de Firebase](https://console.firebase.google.com) crear un proyecto y registrar una **app web**; copiar sus credenciales al archivo `.env` (las variables están en `.env.example`).
 2. **Authentication → Método de acceso:** habilitar *Correo electrónico y contraseña*.
 3. **Firestore Database:** crear la base y, en la pestaña *Reglas*, pegar el contenido de [`firestore.rules`](./firestore.rules) y publicar.
