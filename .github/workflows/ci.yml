@@ -45,11 +45,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         # ↑ Baja el código del repo en el runner
 
       - name: Setup Node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: 20
           cache: npm
@@ -145,7 +145,8 @@ jobs:
             'serviceAccountKey.json' \
             'secrets/*' \
             'no_subir/*' \
-            'no_subir/**')
+            'no_subir/**' \
+            ':(exclude).env.example')
 
           if [ -n "$SOSPECHOSOS" ]; then
             echo "::error::Hay archivos sensibles versionados en el repo:"
