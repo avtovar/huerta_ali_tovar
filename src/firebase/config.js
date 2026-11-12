@@ -18,7 +18,12 @@ const firebaseConfig = {
 
 // true solo si el .env está completo; la UI lo usa para avisar qué falta
 export const firebaseConfigurado = Boolean(
-  firebaseConfig.apiKey && firebaseConfig.projectId && firebaseConfig.appId
+  firebaseConfig.apiKey
+    && firebaseConfig.authDomain
+    && firebaseConfig.projectId
+    && firebaseConfig.storageBucket
+    && firebaseConfig.messagingSenderId
+    && firebaseConfig.appId,
 )
 
 if (!firebaseConfigurado) {
@@ -30,7 +35,7 @@ if (!firebaseConfigurado) {
 const app = initializeApp(
   firebaseConfigurado
     ? firebaseConfig
-    : { apiKey: 'sin-configurar', projectId: 'sin-configurar', appId: 'sin-configurar' }
+    : { apiKey: 'sin-configurar', projectId: 'sin-configurar', appId: 'sin-configurar' },
 )
 
 export const auth = getAuth(app)
