@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom'
 // ↑ Link: enlace SPA sin recargar la página
 
+import { FaShoppingCart } from 'react-icons/fa'
 import { useCart } from '../../context/CartContext'
 // ↑ useCart: nuestro hook para leer el carrito global
 
@@ -17,7 +18,7 @@ function CartWidget() {
   return (
     <Link to="/carrito" className="cart-widget" aria-label="Ir al carrito de compras">
       {/* ↑ Enlace redondo que lleva a la página /carrito. aria-label lo describe para accesibilidad */}
-      <span aria-hidden="true">🛒</span>
+      <FaShoppingCart aria-hidden="true" />
       {/* ↑ Ícono del carrito (decorativo) */}
       {cantidad > 0 && <span className="cart-widget-badge">{cantidad}</span>}
       {/* ↑ Solo si hay productos mostramos el contador rojo. && = "si se cumple, renderizá esto" */}

@@ -7,14 +7,3 @@
 .item-list-container {
   margin-top: 8px;
 }
-
-.item-grid {
-  display: grid;
-  /* ↑ Grilla automática y RESPONSIVE: */
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  /* ↑ auto-fill: crea tantas columnas de 220px mínimo como entren */
-  /* ↑ minmax(220px, 1fr): entre 220px y el espacio restante por columna */
-  /* ↑ Resultado: 4 tarjetas en desktop, 1 en celular, sin media queries */
-  gap: 22px;
-  margin-top: 24px;
-}

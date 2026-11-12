@@ -1,0 +1,27 @@
+.producto-form {
+  background-color: var(--color-card);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-soft);
+  padding: 24px;
+  margin-bottom: 32px;
+}
+
+.producto-form-fila {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 0 16px;
+}
+
+.producto-form-preview {
+  width: 96px;
+  height: 96px;
+  object-fit: cover;
+  border-radius: var(--radius-sm);
+  margin-bottom: 16px;
+}
+
+.producto-form-acciones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}

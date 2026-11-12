@@ -1,36 +1,33 @@
 import React from 'react'
-// ↑ Importamos React en sí (necesario para usar JSX y el StrictMode)
-
 import ReactDOM from 'react-dom/client'
-// ↑ ReactDOM se encarga de "montar" (dibujar) la app dentro del HTML real
-
 import { BrowserRouter } from 'react-router-dom'
-// ↑ BrowserRouter habilita el enrutado: la app sabe en qué URL está sin recargar la página
+import { HelmetProvider } from 'react-helmet-async'
+import { ToastContainer } from 'react-toastify'
+
+import 'bootstrap/dist/css/bootstrap.min.css'
+// ↑ Estilos de Bootstrap (grilla, modal, spinner). Va ANTES de index.css para que los estilos propios tengan prioridad.
+import 'react-toastify/dist/ReactToastify.css'
+import './index.css'
 
 import App from './App'
-// ↑ Traemos el componente principal, que define las rutas de la app
-
+import { AuthProvider } from './context/AuthContext'
 import { CartProvider } from './context/CartContext'
-// ↑ Traemos el proveedor global del carrito, para que toda la app comparta el mismo estado
-
-import './index.css'
-// ↑ Importamos los estilos GLOBALES (variables de color, tipografías, botones, etc.)
 
 ReactDOM.createRoot(document.getElementById('root')).render(
-  // ↑ Buscamos el <div id="root"> de index.html y montamos la app ahí dentro
   <React.StrictMode>
-    {/* ↑ StrictMode: en desarrollo detecta errores y malas prácticas (en producción no hace nada) */}
-    <BrowserRouter basename={import.meta.env.BASE_URL}>
-      {/* ↑ basename le dice a React Router en qué CARPETA está la app dentro del dominio. */}
-      {/* ↑ Sin esto, en el sitio publicado (/la-huerta-de-ali/) React Router compararía */}
-      {/* ↑ la URL completa "/la-huerta-de-ali/" con las rutas declaradas, no encontraría */}
-      {/* ↑ ninguna y mostraría la página 404. Como BASE_URL es '/' en desarrollo y */}
-      {/* ↑ '/la-huerta-de-ali/' en la build, el mismo código sirve para los dos casos. */}
-      {/* ↑ Todo lo de adentro podrá usar links, rutas y useParams de react-router-dom */}
-      <CartProvider>
-        {/* ↑ Todo lo de adentro podrá leer/modificar el carrito con useCart() */}
-        <App />
-      </CartProvider>
-    </BrowserRouter>
+    <HelmetProvider>
+      {/* ↑ HelmetProvider: permite que cada página cambie el <title> y los <meta> */}
+      <BrowserRouter basename={import.meta.env.BASE_URL}>
+        {/* ↑ basename: carpeta del dominio donde vive la app ('/' en dev, '/la-huerta-de-ali/' en GitHub Pages) */}
+        <AuthProvider>
+          {/* ↑ Sesión y rol del usuario, disponibles en toda la app */}
+          <CartProvider>
+            {/* ↑ Carrito global */}
+            <App />
+            <ToastContainer position="bottom-right" theme="dark" autoClose={2500} />
+          </CartProvider>
+        </AuthProvider>
+      </BrowserRouter>
+    </HelmetProvider>
   </React.StrictMode>
 )

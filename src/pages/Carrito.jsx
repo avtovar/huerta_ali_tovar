@@ -7,6 +7,9 @@ import { Link } from 'react-router-dom'
 import { useCart } from '../context/CartContext'
 // ↑ useCart: acceso completo al carrito global (items, totales y acciones)
 
+import { toast } from 'react-toastify'
+import { FaTrash, FaTimes } from 'react-icons/fa'
+import Seo from '../components/Seo/Seo'
 import { rutaPublica } from '../utils/rutasPublicas'
 // ↑ rutaPublica: antepone el prefijo del proyecto a la ruta de la imagen
 
@@ -52,6 +55,7 @@ function Carrito() {
 
   return (
     <div className="page container">
+      <Seo titulo="Tu carrito" />
       <h2>Tu carrito</h2>
 
       <div className="carrito-lista">
@@ -81,7 +85,7 @@ function Carrito() {
               aria-label={`Quitar ${item.nombre} del carrito`}
               // ↑ aria-label: descripción accesible para el botón ✕
             >
-              ✕
+              <FaTimes aria-hidden="true" />
             </button>
           </div>
         ))}
@@ -90,7 +94,7 @@ function Carrito() {
       <div className="carrito-resumen">
         {/* ↑ Barra inferior: vaciar / total / finalizar */}
         <button type="button" className="btn btn-outline" onClick={clearCart}>
-          Vaciar carrito
+          <FaTrash aria-hidden="true" /> Vaciar carrito
         </button>
         <div className="carrito-total">
           <span>Total</span>

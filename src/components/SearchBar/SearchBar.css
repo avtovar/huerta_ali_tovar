@@ -1,0 +1,31 @@
+.searchbar {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 24px;
+}
+
+.searchbar-input,
+.searchbar-select {
+  background-color: var(--color-card);
+  color: var(--color-text);
+  border: 2px solid var(--color-border);
+  border-radius: 999px;
+  padding: 10px 18px;
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+}
+
+.searchbar-input {
+  flex: 1 1 240px;
+}
+
+.searchbar-select {
+  flex: 0 1 220px;
+}
+
+.searchbar-input:focus,
+.searchbar-select:focus {
+  outline: none;
+  border-color: var(--color-primary);
+}

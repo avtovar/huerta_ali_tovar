@@ -1,6 +1,13 @@
-# Documentación - pre_entrega_react_ali_tovar
+# Documentación - proyecto_final_react_ali_tovar
 
 **La Huerta de Ali** es una verdulería online (pre-entrega 2 de React JS) que muestra un catálogo de 12 verduras, permite ver el detalle de cada producto, armar un carrito de compras y finalizar una compra simulada. Usa **React 18 + Vite**, **React Router DOM 6** para la navegación y **Context API** para el estado global del carrito, con **CSS puro** (modo oscuro fijo).
+
+> **Entrega final:** además de lo descripto abajo, el proyecto ahora usa Firebase (Auth + Firestore).
+> Archivos nuevos: `src/firebase/config.js`, `src/services/productosService.js`, `src/context/AuthContext.jsx`,
+> `src/hooks/useProductos.js`, `src/utils/errores.js`, `src/components/{RutaProtegida,SearchBar,Paginador,ProductoForm,ModalConfirmar,Cargando,Seo}`
+> y las páginas `Login`, `Registro`, `Perfil` y `Panel`. El catálogo ya no se lee de `public/productos.json`
+> sino de la colección `productos` de Firestore (el JSON solo sirve para la carga inicial desde el Panel).
+> Ver el `README.md` para la configuración de Firebase y el despliegue.
 
 ## Estructura
 

@@ -1,77 +1,94 @@
-import { useEffect, useState } from 'react'
-// ↑ useState: estado para productos, cargando y error
-// ↑ useEffect: efecto secundario (acá, cargar el JSON al montar)
-
+import { useMemo, useState } from 'react'
+import { Row, Col } from 'react-bootstrap'
 import Item from '../Item/Item'
-// ↑ La tarjeta que se repite por cada producto del catálogo
-
-import { rutaPublica } from '../../utils/rutasPublicas'
-// ↑ rutaPublica: arma la ruta del JSON con el prefijo del proyecto
-// ↑ (import.meta.env.BASE_URL). Ver src/utils/rutasPublicas.js
-
+import SearchBar from '../SearchBar/SearchBar'
+import Paginador from '../Paginador/Paginador'
+import Cargando from '../Cargando/Cargando'
+import { useProductos } from '../../hooks/useProductos'
 import './ItemListContainer.css'
-// ↑ Estilos propios de la grilla de productos
 
-function ItemListContainer({ saludo }) {
-  // ↑ saludo: título opcional que trae la página (ej. "Nuestras verduras")
-  const [productos, setProductos] = useState([])
-  // ↑ productos: array donde se guarda lo que trae el JSON
-  const [cargando, setCargando] = useState(true)
-  // ↑ cargando: true mientras se espera la respuesta del fetch
-  const [error, setError] = useState(false)
-  // ↑ error: pasa a true si el fetch falla
+const POR_PAGINA = 8
 
-  useEffect(() => {
-    // ↑ Este bloque corre UNA vez, cuando el componente se monta ([] = sin dependencias)
-    fetch(rutaPublica('productos.json'))
-      // ↑ Pedimos el archivo público del catálogo (simula una API)
-      // ↑ OJO: la URL NO lleva '/' inicial a mano. rutaPublica() le pone delante
-      // ↑ import.meta.env.BASE_URL, que en desarrollo es '/' y en el build es
-      // ↑ '/la-huerta-de-ali/'. Con '/productos.json' pelado el navegador lo
-      // ↑ buscaría en la raíz del dominio y en GitHub Pages daría 404.
-      .then((res) => res.json())
-      // ↑ Convertimos la respuesta en un objeto/array JavaScript
-      .then((data) => {
-        setProductos(data)
-        // ↑ Guardamos los productos en el estado → React re-renderiza la grilla
-        setCargando(false)
-        // ↑ Terminó la carga
-      })
-      .catch((error) => {
-        // ↑ Si algo falla (red, archivo inexistente...), entramos acá
-        console.error('Error al cargar los productos:', error)
-        // ↑ Mostramos el error en la consola del navegador
-        setError(true)
-        setCargando(false)
-      })
-  }, [])
-  // ↑ Dependencias vacías: solo se ejecuta una vez al montar, no en cada render
+// Quita tildes y pasa a minúsculas para que "limon" encuentre "Limón"
+const normalizar = (t) => t.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase()
+
+// Props:
+//  - saludo: título de la sección
+//  - limite: si se indica (ej. en Home), muestra solo esa cantidad, sin búsqueda ni paginador
+function ItemListContainer({ saludo, limite }) {
+  const { productos, cargando, error, recargar } = useProductos()
+  const [busqueda, setBusqueda] = useState('')
+  const [categoria, setCategoria] = useState('')
+  const [pagina, setPagina] = useState(1)
+
+  const categorias = useMemo(
+    () => [...new Set(productos.map((p) => p.categoria))].sort((a, b) => a.localeCompare(b, 'es')),
+    [productos]
+  )
+
+  const filtrados = useMemo(() => {
+    const q = normalizar(busqueda.trim())
+    return productos.filter(
+      (p) =>
+        (!categoria || p.categoria === categoria) &&
+        (!q || normalizar(p.nombre).includes(q) || normalizar(p.categoria).includes(q))
+    )
+  }, [productos, busqueda, categoria])
+
+  const totalPaginas = Math.max(1, Math.ceil(filtrados.length / POR_PAGINA))
+  const paginaActual = Math.min(pagina, totalPaginas)
+  const visibles = limite
+    ? filtrados.slice(0, limite)
+    : filtrados.slice((paginaActual - 1) * POR_PAGINA, paginaActual * POR_PAGINA)
+
+  // Al cambiar un filtro volvemos a la página 1
+  const onBusqueda = (v) => { setBusqueda(v); setPagina(1) }
+  const onCategoria = (v) => { setCategoria(v); setPagina(1) }
 
   return (
     <div className="item-list-container">
       {saludo && <h2 className="section-title">{saludo}</h2>}
-      {/* ↑ && = "si hay saludo, mostrá el título" */}
+
+      {!limite && !cargando && !error && (
+        <SearchBar
+          busqueda={busqueda}
+          onBusqueda={onBusqueda}
+          categoria={categoria}
+          onCategoria={onCategoria}
+          categorias={categorias}
+        />
+      )}
 
       {cargando ? (
-        // ↑ Mientras carga...
-        <p>Cargando verduras frescas...</p>
+        <Cargando />
       ) : error ? (
-        // ↑ Si falló...
-        <p role="alert">No pudimos cargar los productos. Intentá nuevamente más tarde.</p>
-        // ↑ role="alert": los lectores de pantalla anuncian el mensaje de error
-      ) : (
-        // ↑ Si cargó bien...
-        <div className="item-grid">
-          {productos.map((producto) => (
-            // ↑ .map: convertimos cada producto del array en una tarjeta <Item>
-            <Item key={producto.id} producto={producto} />
-            // ↑ key: id único de cada producto. producto: se pasa por props
-          ))}
+        <div role="alert" className="mensaje mensaje-error">
+          <p>{error}</p>
+          <button type="button" className="btn btn-outline" onClick={recargar}>Reintentar</button>
         </div>
+      ) : visibles.length === 0 ? (
+        <p>
+          {productos.length === 0
+            ? 'Todavía no hay productos cargados.'
+            : 'No encontramos productos que coincidan con tu búsqueda.'}
+        </p>
+      ) : (
+        <>
+          {/* Grilla React-Bootstrap: 1 columna en móvil, 2 en tablet, 4 en escritorio */}
+          <Row className="g-4 mt-1">
+            {visibles.map((producto) => (
+              <Col key={producto.id} xs={12} sm={6} lg={3}>
+                <Item producto={producto} />
+              </Col>
+            ))}
+          </Row>
+          {!limite && (
+            <Paginador pagina={paginaActual} totalPaginas={totalPaginas} onCambiar={setPagina} />
+          )}
+        </>
       )}
     </div>
   )
 }
 
 export default ItemListContainer
-// ↑ Exportamos el contenedor para usarlo en Home y en Productos

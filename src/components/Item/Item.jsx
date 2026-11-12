@@ -1,6 +1,8 @@
 import { Link } from 'react-router-dom'
 // ↑ Link: enlace SPA para ir al detalle del producto
 
+import { toast } from 'react-toastify'
+import { FaCartPlus } from 'react-icons/fa'
 import { useCart } from '../../context/CartContext'
 // ↑ useCart: acceso al carrito global (para el botón "Agregar")
 
@@ -42,10 +44,15 @@ function Item({ producto }) {
           <button
             type="button"
             className="btn btn-primary item-btn"
-            onClick={() => addToCart(producto, 1)}
+            onClick={() => {
+              addToCart(producto, 1)
+              toast.success(`${nombre} agregado al carrito`)
+            }}
+            disabled={producto.stock === 0}
+            aria-label={`Agregar ${nombre} al carrito`}
             // ↑ onClick: al hacer clic agregamos 1 unidad al carrito global
           >
-            Agregar
+            <FaCartPlus aria-hidden="true" /> Agregar
           </button>
         </div>
       </div>

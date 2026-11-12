@@ -49,3 +49,48 @@
   border-bottom: 2px solid var(--color-secondary);
   /* ↑ "Subrayado" naranja pastel en el link de la página actual */
 }
+.nav-usuario {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+.nav-boton {
+  background: transparent;
+  color: #fff;
+  font-weight: 600;
+  font-size: 0.95rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 4px;
+}
+
+.nav-boton:hover {
+  opacity: 0.85;
+}
+
+.nav-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+@media (max-width: 640px) {
+  .navbar-inner {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .nav-links {
+    gap: 14px;
+  }
+
+  .nav-usuario {
+    gap: 12px;
+  }
+
+  .nav-nombre {
+    display: none;
+  }
+}

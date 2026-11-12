@@ -14,7 +14,8 @@ export default defineConfig(({ command }) => ({
   // ↑ y los archivos de la carpeta public/. GitHub Pages publica este repo como un
   // ↑ proyecto DENTRO de la cuenta del usuario, o sea en la SUBCARPETA
   // ↑ /la-huerta-de-ali/ y no en la raíz del dominio. Por eso el base lleva ese prefijo.
-  base: command === 'serve' ? '/' : '/la-huerta-de-ali/',
+  base: command === 'serve' ? '/' : process.env.VITE_BASE || '/la-huerta-de-ali/',
+  // ↑ VITE_BASE permite cambiar el base sin tocar el código: en Netlify/Vercel se define VITE_BASE=/ (sitio en la raíz del dominio).
   // ↑ En DESARROLLO ('serve') el servidor de Vite sirve el proyecto en la raíz
   // ↑ (http://localhost:5173), así que dejamos base '/' y rutas como
   // ↑ /productos.json funcionan tal cual.

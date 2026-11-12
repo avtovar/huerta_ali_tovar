@@ -1,42 +1,53 @@
-import { NavLink } from 'react-router-dom'
-// ↑ NavLink: como Link, pero además sabe si la URL actual coincide (para marcar el link activo)
-
+import { NavLink, useNavigate } from 'react-router-dom'
+import { toast } from 'react-toastify'
+import { FaUser, FaSignInAlt, FaSignOutAlt, FaTools } from 'react-icons/fa'
 import CartWidget from '../CartWidget/CartWidget'
-// ↑ Widget del carrito con su contador de productos
-
+import { useAuth } from '../../context/AuthContext'
 import './NavBar.css'
-// ↑ Estilos propios de la barra de navegación
 
 function NavBar() {
+  const { usuario, esAdmin, logout } = useAuth()
+  const navigate = useNavigate()
   const linkClass = ({ isActive }) => 'nav-link' + (isActive ? ' nav-link-active' : '')
-  // ↑ Función para las clases del link: NavLink la llama con { isActive }
-  // ↑ Si la ruta actual es la del link, le agrega la clase .nav-link-active (se resalta)
+
+  const handleLogout = async () => {
+    await logout()
+    toast.info('Sesión cerrada')
+    navigate('/')
+  }
 
   return (
-    <nav className="navbar">
-      {/* ↑ Etiqueta semántica de navegación */}
+    <nav className="navbar" aria-label="Navegación principal">
       <div className="container navbar-inner">
-        {/* ↑ Centra el contenido y separa los links (izquierda) del carrito (derecha) */}
         <ul className="nav-links">
-          {/* ↑ Lista de links de navegación */}
-          <li>
-            <NavLink to="/" end className={linkClass}>
-              {/* ↑ end: solo se marca activo en la ruta EXACTA "/", no en las demás */}
-              Inicio
-            </NavLink>
-          </li>
-          <li>
-            <NavLink to="/productos" className={linkClass}>
-              Productos
-            </NavLink>
-          </li>
+          <li><NavLink to="/" end className={linkClass}>Inicio</NavLink></li>
+          <li><NavLink to="/productos" className={linkClass}>Productos</NavLink></li>
+          {esAdmin && (
+            <li>
+              <NavLink to="/panel" className={linkClass}><FaTools aria-hidden="true" /> Panel</NavLink>
+            </li>
+          )}
         </ul>
-        <CartWidget />
-        {/* ↑ Contador del carrito, siempre visible en la barra */}
+        <div className="nav-usuario">
+          {usuario ? (
+            <>
+              <NavLink to="/perfil" className={linkClass}>
+                <FaUser aria-hidden="true" /> <span className="nav-nombre">{usuario.displayName || 'Mi perfil'}</span>
+              </NavLink>
+              <button type="button" className="nav-boton" onClick={handleLogout} aria-label="Cerrar sesión">
+                <FaSignOutAlt aria-hidden="true" /> <span className="nav-nombre">Salir</span>
+              </button>
+            </>
+          ) : (
+            <NavLink to="/login" className={linkClass}>
+              <FaSignInAlt aria-hidden="true" /> Ingresar
+            </NavLink>
+          )}
+          <CartWidget />
+        </div>
       </div>
     </nav>
   )
 }
 
 export default NavBar
-// ↑ Exportamos el componente para usarlo en Layout

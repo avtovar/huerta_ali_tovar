@@ -1,0 +1,26 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function esAdmin() {
+      return request.auth != null
+        && exists(/databases/$(database)/documents/usuarios/$(request.auth.uid))
+        && get(/databases/$(database)/documents/usuarios/$(request.auth.uid)).data.rol == 'admin';
+    }
+
+    // Catálogo: lo puede leer cualquiera, solo el admin lo modifica.
+    match /productos/{id} {
+      allow read: if true;
+      allow write: if esAdmin();
+    }
+
+    // Perfil de usuario: cada uno crea y lee el suyo, siempre con rol 'user'.
+    // El rol 'admin' se asigna a mano desde la consola de Firebase.
+    match /usuarios/{uid} {
+      allow read: if request.auth != null && request.auth.uid == uid;
+      allow create: if request.auth != null && request.auth.uid == uid
+                    && request.resource.data.rol == 'user';
+      allow update, delete: if false;
+    }
+  }
+}

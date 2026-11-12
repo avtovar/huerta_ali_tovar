@@ -1,0 +1,36 @@
+.auth-card {
+  max-width: 440px;
+  margin: 0 auto;
+  background-color: var(--color-card);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-soft);
+  padding: 32px 28px;
+}
+
+.auth-boton {
+  width: 100%;
+  margin-top: 8px;
+}
+
+.auth-pie {
+  margin: 20px 0 0;
+  text-align: center;
+  color: var(--color-text-soft);
+}
+
+.auth-pie a,
+.mensaje a {
+  color: var(--color-primary-dark);
+  text-decoration: underline;
+}
+
+.auth-aviso {
+  color: var(--color-secondary);
+}
+
+.auth-acciones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 20px;
+}

@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom'
 // ↑ Link: enlace SPA para ir al catálogo
 
+import Seo from '../components/Seo/Seo'
 import ItemListContainer from '../components/ItemListContainer/ItemListContainer'
 // ↑ Componente que muestra la grilla de productos (cargada con fetch)
 
@@ -11,6 +12,7 @@ function Home() {
   // ↑ Página principal: presentación + catálogo
   return (
     <div className="page">
+      <Seo descripcion="Verdulería online: verduras frescas, directo de la huerta a tu mesa." />
       {/* ↑ page: clase utilitaria que da padding vertical y altura mínima */}
 
       <section className="container hero">
@@ -34,7 +36,7 @@ function Home() {
       </section>
 
       <section className="container">
-        <ItemListContainer saludo="Nuestras verduras" />
+        <ItemListContainer saludo="Nuestras verduras" limite={4} />
         {/* ↑ Reutilizamos el contenedor del catálogo; saludo es el título de la sección */}
       </section>
     </div>

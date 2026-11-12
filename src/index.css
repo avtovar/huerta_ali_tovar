@@ -127,11 +127,13 @@ img {
 .btn-primary {
   /* ↑ Variante verde principal */
   background-color: var(--color-primary);
+  border: 2px solid var(--color-primary);
   color: #fff;
 }
 
 .btn-primary:hover {
   background-color: var(--color-primary-dark);
+  border-color: var(--color-primary-dark);
   transform: translateY(-1px);
   /* ↑ Al pasar el mouse, el botón "sube" 1px (efecto de elevación) */
 }
@@ -139,7 +141,8 @@ img {
 .btn-secondary {
   /* ↑ Variante de apoyo (botón "Suscribirme" del footer) */
   background-color: var(--color-secondary);
-  color: var(--color-text);
+  border: 2px solid var(--color-secondary);
+  color: var(--color-bg);
 }
 
 .btn-secondary:hover {
@@ -168,4 +171,120 @@ img {
 .section-subtitle {
   color: var(--color-text-soft);
   max-width: 640px;
+}
+
+/* ---------- Utilidades y formularios compartidos (entrega final) ---------- */
+
+.texto-centrado {
+  text-align: center;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+}
+
+.cargando {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--color-text-soft);
+  padding: 16px 0;
+}
+
+.mensaje {
+  border-radius: var(--radius-sm);
+  padding: 12px 16px;
+}
+
+.mensaje-error {
+  background-color: rgba(229, 168, 168, 0.15);
+  border: 1px solid var(--color-accent);
+  color: var(--color-accent);
+}
+
+.mensaje-error p {
+  margin-bottom: 8px;
+}
+
+.form-grupo {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 16px;
+}
+
+.form-grupo label {
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+
+.form-grupo input,
+.form-grupo select,
+.form-grupo textarea {
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  padding: 10px 14px;
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  width: 100%;
+}
+
+.form-grupo input:focus,
+.form-grupo select:focus,
+.form-grupo textarea:focus {
+  outline: none;
+  border-color: var(--color-primary);
+}
+
+.form-grupo [aria-invalid='true'] {
+  border-color: var(--color-accent);
+}
+
+.form-error {
+  color: var(--color-accent);
+  font-size: 0.82rem;
+}
+
+.btn-peligro {
+  background-color: #c0575a;
+  color: #fff;
+}
+
+.btn-peligro:hover:not(:disabled) {
+  background-color: #d36d70;
+}
+
+.btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.modal-oscuro {
+  background-color: var(--color-card);
+  color: var(--color-text);
+  border: 1px solid var(--color-border);
+}
+
+.modal-oscuro .modal-header,
+.modal-oscuro .modal-footer {
+  border-color: var(--color-border);
+}
+
+/* Bootstrap define bordes propios en .btn: los fijamos para respetar la paleta */
+.btn-peligro {
+  border: 2px solid #c0575a;
+}
+
+/* .page ponía padding horizontal 0 y en móvil el contenido tocaba los bordes */
+.page.container {
+  padding-left: 24px;
+  padding-right: 24px;
 }

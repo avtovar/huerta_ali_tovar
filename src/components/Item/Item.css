@@ -6,6 +6,7 @@
    ============================================================ */
 
 .item-card {
+  height: 100%;
   /* ↑ La tarjeta completa */
   background-color: var(--color-card);
   border-radius: var(--radius-md);

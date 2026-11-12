@@ -1,4 +1,4 @@
-import { createContext, useContext, useState } from 'react'
+import { createContext, useContext, useEffect, useState } from 'react'
 // ↑ createContext: crea un "estado compartido" para toda la app
 // ↑ useContext: hook para leer ese estado compartido desde cualquier componente
 // ↑ useState: estado local (en este caso, la lista del carrito)
@@ -10,7 +10,22 @@ export function CartProvider({ children }) {
   // ↑ Provider: el componente que ENVUELVE la app y le da acceso al carrito
   // ↑ children = todo lo que esté adentro de <CartProvider>...</CartProvider>
 
-  const [carrito, setCarrito] = useState([])
+  const [carrito, setCarrito] = useState(() => {
+    // Recupera el carrito guardado para que no se pierda al recargar la página
+    try {
+      return JSON.parse(localStorage.getItem('carrito')) || []
+    } catch {
+      return []
+    }
+  })
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('carrito', JSON.stringify(carrito))
+    } catch {
+      // si el navegador bloquea localStorage, el carrito sigue funcionando en memoria
+    }
+  }, [carrito])
   // ↑ carrito: array de productos agregados, ej. [{ id, nombre, cantidad, precio... }]
   // ↑ setCarrito: la función para actualizar ese array (React vuelve a dibujar la app)
 

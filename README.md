@@ -2,156 +2,85 @@
 
 [![CI](https://github.com/avtovar/la-huerta-de-ali/actions/workflows/ci.yml/badge.svg)](https://github.com/avtovar/la-huerta-de-ali/actions/workflows/ci.yml) [![GitHub Pages](https://github.com/avtovar/la-huerta-de-ali/actions/workflows/deploy.yml/badge.svg)](https://avtovar.github.io/la-huerta-de-ali/)
 
-Proyecto de Pre-Entrega 2 de React JS, realizado por Ali Tovar.
+Entrega Final de React JS, realizada por Ali Tovar.
 
-La Huerta de Ali es una verdulería online con un catálogo de productos frescos,
-detalle individual, carrito de compras y diseño responsive en modo oscuro.
+La Huerta de Ali es una verdulería online: catálogo con búsqueda y paginación,
+detalle de producto, carrito, registro e inicio de sesión, y un panel de
+administración para gestionar los productos (CRUD) sobre Firebase.
 
 ## Tecnologías utilizadas
 
-- React 18
-- Vite
-- React Router DOM 6
-- Context API para el carrito
-- CSS sin frameworks externos
-- `fetch` y `useEffect` para cargar el catálogo local
-
-## Instalación y ejecución
-
-Requisitos: Node.js instalado (se recomienda la versión 18 o superior) y npm,
-que ya viene incluido dentro de Node.
-
-Hay dos formas de levantar el proyecto en desarrollo. Las dos funcionan:
-
-- Opción A: el atajo `./local.sh`, que hace los pasos repetitivos por vos.
-- Opción B: los comandos de npm a mano, que son el camino oficial de la cursada.
-
-### Opción A: el atajo `./local.sh`
-
-`local.sh` es un script Bash que se ubica solo en la raíz del proyecto, verifica
-que `node` y `npm` estén instalados, avisa si la versión de Node es menor a 18,
-ejecuta `npm install` automáticamente cuando hace falta (si no existe la carpeta
-`node_modules` o si `package-lock.json` quedó más reciente) y después levanta el
-servidor de desarrollo.
-
-```bash
-./local.sh
-```
-
-Muestra un banner al arrancar y un mensaje de despedida al salir. Cualquier
-argumento extra se reenvía tal cual a Vite:
-
-```bash
-./local.sh --host          # expone el servidor en la red local
-./local.sh --port 3000     # usa el puerto 3000 en lugar del 5173
-```
-
-En Windows el atajo no funciona con doble clic: el archivo empieza con una línea
-`#!/usr/bin/env bash`, que solo honra un intérprete Unix. Usá Git Bash, usá WSL,
-o invocá el intérprete explícitamente desde PowerShell:
-
-```powershell
-bash ./local.sh
-```
-
-### Opción B: comandos npm (el camino oficial)
-
-1. Abrir una terminal en la carpeta del proyecto.
-2. Instalar las dependencias:
-
-   ```bash
-   npm install
-   ```
-
-3. Iniciar el servidor de desarrollo:
-
-   ```bash
-   npm run dev
-   ```
-
-4. Abrir la dirección indicada por Vite, normalmente `http://localhost:5173`.
-
-Para generar una compilación de producción:
-
-```bash
-npm run build
-```
-
-Para previsualizar esa compilación:
-
-```bash
-npm run preview
-```
+- React 18 + Vite
+- React Router DOM 6 (rutas y rutas protegidas)
+- Context API (`CartContext` y `AuthContext`)
+- Firebase Authentication y Cloud Firestore
+- React-Bootstrap / Bootstrap 5 (grilla responsive, Modal, Spinner)
+- CSS propio por componente (sin estilos en línea ni styled-components)
+- React Icons, React Toastify y React Helmet Async
 
 ## Funcionalidades
 
-- Página de inicio con presentación del emprendimiento.
-- Catálogo de 12 verduras.
-- Carga de productos desde `public/productos.json` usando `fetch` dentro de `useEffect`.
-- Imágenes guardadas localmente en `public/verduras`.
-- Rutas de `public/` resueltas con `rutaPublica()`, para que funcionen en GitHub Pages (subcarpeta `/la-huerta-de-ali/`).
-- Tarjetas reutilizables mediante el componente `Item`.
-- Vista de detalle para cada producto.
-- Selector de cantidad.
-- Carrito global mediante Context API.
-- Imagen, nombre, cantidad y subtotal por producto, y total general en el resumen del carrito.
-- Control de cantidades según el stock disponible.
-- Opción para quitar productos, vaciar el carrito y finalizar una compra simulada.
-- Newsletter simulado en el footer.
-- Modo oscuro fijo con colores pastel de acento.
-- Mensajes para carrito vacío, producto inexistente y error de carga.
+- **Carrito (Context API):** agregar, eliminar, incrementar/decrementar cantidad (con tope de stock) y vaciar. Se guarda en `localStorage`.
+- **Autenticación (Context API + Firebase Auth):** formularios controlados de login y registro, sesión persistente, cierre de sesión y página `/perfil`.
+- **Roles:** `admin` o `user`. El rol se lee del documento `usuarios/{uid}` de Firestore (sin documento = usuario común).
+- **Rutas protegidas:** `/perfil` exige sesión; `/panel` exige sesión y rol `admin`. Sin sesión redirige a `/login` y vuelve a la ruta pedida al ingresar.
+- **Panel de administración (`/panel`):** alta, edición (reutiliza el mismo formulario), eliminación con modal de confirmación, validaciones, spinner de carga, mensajes de error y avisos con toasts.
+- **Búsqueda y paginación:** búsqueda en tiempo real (ignora tildes), filtro por categoría y paginador (8 productos por página).
+- **Diseño responsivo** (móvil, tablet y escritorio) y SEO por página con React Helmet.
 
-## Rutas disponibles
+## Rutas
 
-| Ruta | Descripción |
-| --- | --- |
-| `/` | Página principal |
-| `/productos` | Catálogo completo |
-| `/producto/:id` | Detalle de un producto |
-| `/carrito` | Carrito de compras |
+| Ruta | Descripción | Acceso |
+| --- | --- | --- |
+| `/` | Inicio | Público |
+| `/productos` | Catálogo con búsqueda y paginador | Público |
+| `/producto/:id` | Detalle de un producto | Público |
+| `/carrito` | Carrito de compras | Público |
+| `/login`, `/registro` | Acceso y alta de cuenta | Público |
+| `/perfil` | Datos de la cuenta y cierre de sesión | Usuarios logueados |
+| `/panel` | CRUD de productos | Solo administradores |
 
-La navegación se realiza con `react-router-dom`, usando `NavLink` y `Link`, sin
-recargar la página.
+## Instalación y ejecución local
+
+Requisitos: Node.js 18 o superior y npm.
+
+```bash
+npm install
+cp .env.example .env      # y completar con los datos de tu proyecto Firebase
+npm run dev               # http://localhost:5173
+```
+
+Otros comandos: `npm run build` (genera `dist/`) y `npm run preview`.
+
+## Configuración de Firebase (una sola vez)
+
+1. En la [consola de Firebase](https://console.firebase.google.com) crear un proyecto y registrar una **app web**; copiar sus credenciales al archivo `.env` (las variables están en `.env.example`).
+2. **Authentication → Método de acceso:** habilitar *Correo electrónico y contraseña*.
+3. **Firestore Database:** crear la base y, en la pestaña *Reglas*, pegar el contenido de [`firestore.rules`](./firestore.rules) y publicar.
+4. **Crear el administrador:** registrar una cuenta desde `/registro`, copiar su UID (Authentication → Users) y en Firestore editar/crear el documento `usuarios/<UID>` con el campo `rol` = `admin`.
+5. Iniciar sesión con esa cuenta, entrar a `/panel` y usar el botón **"Cargar los 12 productos iniciales"** (copia `public/productos.json` a la colección `productos`).
+6. Al publicar el sitio, agregar el dominio (por ejemplo `avtovar.github.io`) en *Authentication → Configuración → Dominios autorizados*.
+
+## Despliegue
+
+**GitHub Pages (configuración actual):** el workflow `.github/workflows/deploy.yml` compila y publica en cada push a `main`. Cargar las seis variables `VITE_FIREBASE_*` como *Secrets* en *Settings → Secrets and variables → Actions*. El `base` es `/la-huerta-de-ali/`.
+
+**Netlify o Vercel:** importar el repositorio, comando `npm run build`, directorio `dist`, y definir las variables de entorno `VITE_FIREBASE_*` más `VITE_BASE=/` (el sitio queda en la raíz del dominio). Las redirecciones de la SPA ya están incluidas (`public/_redirects` para Netlify y `vercel.json` para Vercel).
 
 ## Estructura principal
 
-```text
-index.html               Punto de entrada de Vite (contiene el <div id="root">)
-vite.config.js           Plugin de React y `base` según el entorno: `/` en dev, `/la-huerta-de-ali/` en Pages
-package.json             Dependencias y scripts del proyecto
-local.sh                 Atajo Bash que instala lo necesario y levanta el servidor
-
-src/
-  index.css              Estilos GLOBALES: paleta de colores, tipografías y botones
-  main.jsx               Punto de entrada de React
-  App.jsx                Configuración de rutas
-  context/
-    CartContext.jsx      Estado global del carrito
-  utils/
-    rutasPublicas.js     Arma las rutas de public/ con el prefijo de Pages
-  components/
-    Layout/              Estructura general de la aplicación
-    Header/              Logo y slogan
-    NavBar/              Navegación principal y carrito
-    CartWidget/          Ícono y contador del carrito
-    Item/                Tarjeta reutilizable de producto
-    ItemListContainer/   Carga y listado del catálogo
-    ItemDetail/          Información y compra de un producto
-    Footer/              Contacto, legales, newsletter y equipo
-  pages/
-    Home.jsx             Página principal
-    Productos.jsx        Catálogo
-    ProductoDetalle.jsx  Detalle por ID
-    Carrito.jsx          Carrito de compras
-    NotFound.jsx         Página 404
-
-public/
-  productos.json         Datos de los productos
-  verduras/              Imágenes locales del catálogo
 ```
-
-Nota: cada componente y página tiene su propio archivo CSS en la misma carpeta
-(ej. `Item.jsx` → `Item.css`), importado desde ese mismo componente.
+src/
+├── firebase/config.js        # inicialización de Firebase (lee el .env)
+├── services/productosService.js  # CRUD de Firestore
+├── context/                  # AuthContext y CartContext
+├── hooks/useProductos.js     # carga del catálogo (cargando / error)
+├── components/               # NavBar, Item, ItemListContainer, SearchBar, Paginador,
+│                             # ProductoForm, ModalConfirmar, RutaProtegida, Seo, ...
+├── pages/                    # Home, Productos, ProductoDetalle, Carrito,
+│                             # Login, Registro, Perfil, Panel, NotFound
+└── utils/                    # rutasPublicas.js y errores.js
+```
 
 ## Documentación del código
 
@@ -175,7 +104,7 @@ cada clase CSS y los conceptos de React que se usan), ver
 | --- | --- |
 | Nombre | Ali Tovar |
 | Rol | Autor y desarrollador del proyecto |
-| Cursada | Pre-Entrega · React JS |
+| Cursada | Entrega Final · React JS |
 | Email del emprendimiento | [huertaali@gmail.com](mailto:huertaali@gmail.com) |
 | Teléfono/WhatsApp | +54 9 12345678 |
 | Instagram | @huertaali |
@@ -184,7 +113,7 @@ cada clase CSS y los conceptos de React que se usan), ver
 | Sitio publicado | [avtovar.github.io/la-huerta-de-ali](https://avtovar.github.io/la-huerta-de-ali/) |
 
 > **La Huerta de Ali** · Somos los mejores en calidad y productos frescos.
-> Pre-Entrega 2 de React JS. Proyecto realizado por **Ali Tovar**.
+> Entrega Final de React JS. Proyecto realizado por **Ali Tovar**.
 
 ## Notas
 

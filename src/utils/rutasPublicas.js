@@ -37,6 +37,8 @@
  *                    Ej: '/productos.json' en dev, '/la-huerta-de-ali/productos.json' en la build.
  */
 export function rutaPublica(relativa) {
+  // ↑ Si la imagen es una URL completa (cargada desde el Panel), se usa tal cual
+  if (/^https?:\/\//i.test(relativa)) return relativa
   // ↑ BASE_URL siempre termina en '/', por eso alcanza con concatenar sin otra barra
   return `${import.meta.env.BASE_URL}${relativa}`
   // ↑ Template string: arma la ruta final, ej. '/la-huerta-de-ali/' + 'verduras/tomate.jpg'
