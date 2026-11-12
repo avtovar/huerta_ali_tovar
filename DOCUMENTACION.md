@@ -13,7 +13,7 @@
 
 - `index.html` — Punto de entrada de Vite: define `#root` donde React dibuja toda la app.
 - `package.json` — Configuración del proyecto: nombre, scripts (`dev`, `build`, `preview`) y dependencias.
-- `vite.config.js` — Configuración de Vite: el plugin de React y el `base`, que cambia según el entorno (`/` cuando se levanta el servidor, `/la-huerta-de-ali/` en la build, porque GitHub Pages sirve el proyecto dentro de una subcarpeta del dominio).
+- `vite.config.js` — Configuración de Vite: el plugin de React y el `base`, que cambia según el entorno (`/` cuando se levanta el servidor, `/huerta_ali_tovar/` en la build, porque GitHub Pages sirve el proyecto dentro de una subcarpeta del dominio).
 - `src/main.jsx` — Entrada de la app: monta React y envuelve todo con `BrowserRouter` (que recibe `basename={import.meta.env.BASE_URL}` para saber en qué carpeta del dominio está la app) + `CartProvider`.
 - `src/index.css` — Estilos GLOBALES: variables de color (paleta), tipografías, botones genéricos, clases utilitarias (`.container`, `.btn`, `.page`).
 - `src/App.jsx` — Configura las rutas de la aplicación (Home, Productos, Detalle, Carrito, 404).
@@ -56,7 +56,7 @@ npm run preview  -> previsualiza la compilación de producción localmente
 6. **React Router DOM** — `BrowserRouter`, `Routes`, `Route`, `NavLink`, `Link`, `useParams` y `Outlet` para navegar sin recargar la página.
 7. **`.map()` con `key`** — Se usa para convertir un array de productos en una lista de componentes; `key` ayuda a React a identificar cada uno.
 8. **`fetch` de un JSON local** — La app carga los productos desde `public/productos.json` (simula una API). La URL no se escribe a mano: la arma `rutaPublica('productos.json')`.
-9. **`import.meta.env.BASE_URL` y el prefijo de rutas** — El proyecto se publica en GitHub Pages dentro de la subcarpeta `/la-huerta-de-ali/`, así que una ruta escrita con `/` inicial se resuelve desde la raíz del DOMINIO y da 404. Vite publica el `base` de `vite.config.js` en `import.meta.env.BASE_URL` (`/` en desarrollo, `/la-huerta-de-ali/` en la build) y el helper `rutaPublica()` le antepone ese prefijo a los archivos de `public/`. Como el `BrowserRouter` recibe ese mismo valor en su prop `basename`, React Router compara las rutas de la app contra la URL correcta y no muestra el 404 en todas las páginas.
+9. **`import.meta.env.BASE_URL` y el prefijo de rutas** — El proyecto se publica en GitHub Pages dentro de la subcarpeta `/huerta_ali_tovar/`, así que una ruta escrita con `/` inicial se resuelve desde la raíz del DOMINIO y da 404. Vite publica el `base` de `vite.config.js` en `import.meta.env.BASE_URL` (`/` en desarrollo, `/huerta_ali_tovar/` en la build) y el helper `rutaPublica()` le antepone ese prefijo a los archivos de `public/`. Como el `BrowserRouter` recibe ese mismo valor en su prop `basename`, React Router compara las rutas de la app contra la URL correcta y no muestra el 404 en todas las páginas.
 10. **`grid` / `flexbox` en CSS** — Para armar grillas de productos, layout de página y diseños responsive.
 11. **Variables CSS (`:root`)** — Centralizan colores y fuentes para mantener una paleta consistente.
 

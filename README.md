@@ -1,6 +1,6 @@
 # La Huerta de Ali
 
-[![CI](https://github.com/avtovar/la-huerta-de-ali/actions/workflows/ci.yml/badge.svg)](https://github.com/avtovar/la-huerta-de-ali/actions/workflows/ci.yml) [![GitHub Pages](https://github.com/avtovar/la-huerta-de-ali/actions/workflows/deploy.yml/badge.svg)](https://avtovar.github.io/la-huerta-de-ali/)
+[![CI](https://github.com/avtovar/huerta_ali_tovar/actions/workflows/ci.yml/badge.svg)](https://github.com/avtovar/huerta_ali_tovar/actions/workflows/ci.yml) [![GitHub Pages](https://github.com/avtovar/huerta_ali_tovar/actions/workflows/deploy.yml/badge.svg)](https://avtovar.github.io/huerta_ali_tovar/)
 
 Entrega Final de React JS, realizada por Ali Tovar.
 
@@ -63,7 +63,7 @@ Otros comandos: `npm run build` (genera `dist/`) y `npm run preview`.
 
 ## Despliegue
 
-**GitHub Pages (configuración actual):** el workflow `.github/workflows/deploy.yml` compila y publica en cada push a `main`. Cargar las seis variables `VITE_FIREBASE_*` como *Secrets* en *Settings → Secrets and variables → Actions*. El `base` es `/la-huerta-de-ali/`.
+**GitHub Pages:** la primera vez, habilitarlo en *Settings → Pages → Build and deployment → Source: GitHub Actions*. Después, el workflow `.github/workflows/deploy.yml` compila y publica en cada push a `main`. Cargar las seis variables `VITE_FIREBASE_*` como *Secrets* en *Settings → Secrets and variables → Actions*. El `base` es `/huerta_ali_tovar/`.
 
 **Netlify o Vercel:** importar el repositorio, comando `npm run build`, directorio `dist`, y definir las variables de entorno `VITE_FIREBASE_*` más `VITE_BASE=/` (el sitio queda en la raíz del dominio). Las redirecciones de la SPA ya están incluidas (`public/_redirects` para Netlify y `vercel.json` para Vercel).
 
@@ -109,8 +109,8 @@ cada clase CSS y los conceptos de React que se usan), ver
 | Teléfono/WhatsApp | +54 9 12345678 |
 | Instagram | @huertaali |
 | Sede | Av. Siempre Verde 1234, Buenos Aires |
-| Código | [github.com/avtovar/la-huerta-de-ali](https://github.com/avtovar/la-huerta-de-ali) |
-| Sitio publicado | [avtovar.github.io/la-huerta-de-ali](https://avtovar.github.io/la-huerta-de-ali/) |
+| Código | [github.com/avtovar/huerta_ali_tovar](https://github.com/avtovar/huerta_ali_tovar) |
+| Sitio publicado | [avtovar.github.io/huerta_ali_tovar](https://avtovar.github.io/huerta_ali_tovar/) |
 
 > **La Huerta de Ali** · Somos los mejores en calidad y productos frescos.
 > Entrega Final de React JS. Proyecto realizado por **Ali Tovar**.
