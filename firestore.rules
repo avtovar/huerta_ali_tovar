@@ -14,6 +14,15 @@ service cloud.firestore {
       allow write: if esAdmin();
     }
 
+    match /equipo/{id} {
+      allow read: if true;
+      allow write: if esAdmin();
+    }
+
+    match /cupones/{id} {
+      allow read, write: if esAdmin();
+    }
+
     // Perfil de usuario: cada uno crea y lee el suyo, siempre con rol 'user'.
     // El rol 'admin' se asigna a mano desde la consola de Firebase.
     match /usuarios/{uid} {

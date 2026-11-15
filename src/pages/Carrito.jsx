@@ -7,10 +7,10 @@ import { Link } from 'react-router-dom'
 import { useCart } from '../context/CartContext'
 // ↑ useCart: acceso completo al carrito global (items, totales y acciones)
 
-import { toast } from 'react-toastify'
-import { FaTrash, FaTimes } from 'react-icons/fa'
+import { FaCheck, FaTrash, FaTimes } from 'react-icons/fa'
 import Seo from '../components/Seo/Seo'
 import { rutaPublica } from '../utils/rutasPublicas'
+import ModalConfirmar from '../components/ModalConfirmar/ModalConfirmar'
 // ↑ rutaPublica: antepone el prefijo del proyecto a la ruta de la imagen
 
 import './Carrito.css'
@@ -22,9 +22,11 @@ function Carrito() {
 
   const [comprado, setComprado] = useState(false)
   // ↑ comprado: true después de "Finalizar compra" → pantalla de agradecimiento
+  const [confirmacionCompra, setConfirmacionCompra] = useState(false)
 
   const handleComprar = () => {
     // ↑ Acción del botón "Finalizar compra" (simulación, no hay pago real)
+    setConfirmacionCompra(false)
     setComprado(true)
     // ↑ Cambiamos a la pantalla de gracias
     clearCart()
@@ -101,10 +103,21 @@ function Carrito() {
           <strong>${getTotal()}</strong>
           {/* ↑ Suma total de todos los subtotales */}
         </div>
-        <button type="button" className="btn btn-primary" onClick={handleComprar}>
+        <button type="button" className="btn btn-primary" onClick={() => setConfirmacionCompra(true)}>
           Finalizar compra
         </button>
       </div>
+      <ModalConfirmar
+        mostrar={confirmacionCompra}
+        titulo="Confirmar compra"
+        mensaje={`¿Confirmás la compra por $${getTotal()}? El carrito se vaciará. Esta es una simulación y no se realizará ningún pago.`}
+        onConfirmar={handleComprar}
+        onCancelar={() => setConfirmacionCompra(false)}
+        procesando={false}
+        textoConfirmar="Sí, finalizar compra"
+        icono={FaCheck}
+        claseAccion="btn-primary"
+      />
     </div>
   )
 }

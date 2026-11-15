@@ -15,6 +15,22 @@ export default defineConfig(({ command }) => ({
   // ↑ proyecto DENTRO de la cuenta del usuario, o sea en la SUBCARPETA
   // ↑ /huerta_ali_tovar/ y no en la raíz del dominio. Por eso el base lleva ese prefijo.
   base: command === 'serve' ? '/' : process.env.VITE_BASE || '/huerta_ali_tovar/',
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          if (id.includes('/node_modules/firebase/') || id.includes('/node_modules/@firebase/')) {
+            return 'firebase'
+          }
+          if (id.includes('/node_modules/react-bootstrap/') || id.includes('/node_modules/bootstrap/')) {
+            return 'bootstrap'
+          }
+          if (id.includes('/node_modules/react-icons/')) return 'icons'
+          if (id.includes('/node_modules/styled-components/')) return 'styled'
+        },
+      },
+    },
+  },
   // ↑ VITE_BASE permite cambiar el base sin tocar el código: en Netlify/Vercel se define VITE_BASE=/ (sitio en la raíz del dominio).
   // ↑ En DESARROLLO ('serve') el servidor de Vite sirve el proyecto en la raíz
   // ↑ (http://localhost:5173), así que dejamos base '/' y rutas como

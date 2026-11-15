@@ -1,6 +1,6 @@
 import { NavLink, useNavigate } from 'react-router-dom'
 import { toast } from 'react-toastify'
-import { FaUser, FaSignInAlt, FaSignOutAlt, FaTools } from 'react-icons/fa'
+import { FaUser, FaSignInAlt, FaSignOutAlt, FaTools, FaTags } from 'react-icons/fa'
 import CartWidget from '../CartWidget/CartWidget'
 import { useAuth } from '../../context/AuthContext'
 import './NavBar.css'
@@ -23,9 +23,14 @@ function NavBar() {
           <li><NavLink to="/" end className={linkClass}>Inicio</NavLink></li>
           <li><NavLink to="/productos" className={linkClass}>Productos</NavLink></li>
           {esAdmin && (
-            <li>
-              <NavLink to="/panel" className={linkClass}><FaTools aria-hidden="true" /> Panel</NavLink>
-            </li>
+            <>
+              <li>
+                <NavLink to="/panel" className={linkClass}><FaTools aria-hidden="true" /> Panel</NavLink>
+              </li>
+              <li>
+                <NavLink to="/admin/cupones" className={linkClass}><FaTags aria-hidden="true" /> Cupones</NavLink>
+              </li>
+            </>
           )}
         </ul>
         <div className="nav-usuario">

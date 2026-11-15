@@ -1,10 +1,21 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import styled from 'styled-components'
+import { firebaseConfigurado } from '../../firebase/config'
+import { obtenerEquipo } from '../../services/equipoService'
 // ↑ useState: estado local del formulario de newsletter
 
 import './Footer.css'
 // ↑ Estilos propios del pie de página
 
-const equipo = [
+const TeamCard = styled.article`
+  background-color: var(--color-card);
+  border-radius: var(--radius-md);
+  padding: 24px;
+  text-align: center;
+  box-shadow: var(--shadow-soft);
+`
+
+const equipoRespaldo = [
   // ↑ Array de datos del equipo; no es estado, es información fija que se recorre con .map()
   {
     nombre: 'Ali Tovar',
@@ -27,6 +38,7 @@ const equipo = [
 ]
 
 function Footer() {
+  const [equipo, setEquipo] = useState(equipoRespaldo)
   const [email, setEmail] = useState('')
   // ↑ email: lo que el usuario escribe en el input del newsletter
   // ↑ setEmail: actualiza ese valor en cada tecla que se escribe
@@ -48,6 +60,21 @@ function Footer() {
 
   const anio = new Date().getFullYear()
   // ↑ Año actual automático para el copyright (así no queda desactualizado)
+
+  useEffect(() => {
+    if (!firebaseConfigurado) return undefined
+
+    let activo = true
+    obtenerEquipo()
+      .then((personas) => {
+        if (activo && personas.length > 0) setEquipo(personas)
+      })
+      .catch((error) => {
+        console.error('No se pudo cargar el equipo de Firestore:', error)
+      })
+
+    return () => { activo = false }
+  }, [])
 
   return (
     <footer className="footer">
@@ -110,14 +137,14 @@ function Footer() {
         <div className="team-grid">
           {equipo.map((persona) => (
             // ↑ .map recorre el array equipo y crea una tarjeta por persona
-            <div className="team-card" key={persona.nombre}>
+            <TeamCard className="team-card" key={persona.id || persona.nombre}>
               {/* ↑ key: identificador único que React necesita en listas */}
               <div className="team-avatar">{persona.inicial}</div>
               {/* ↑ Círculo con la inicial de la persona */}
               <h4>{persona.nombre}</h4>
               <span className="team-rol">{persona.rol}</span>
               <p>{persona.frase}</p>
-            </div>
+            </TeamCard>
           ))}
         </div>
       </div>

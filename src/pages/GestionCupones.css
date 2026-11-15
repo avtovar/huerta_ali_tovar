@@ -1,0 +1,76 @@
+.cupon-form {
+  display: grid;
+  gap: 16px;
+  margin-bottom: 32px;
+  padding: 24px;
+  background-color: var(--color-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+}
+
+.cupon-form h3 {
+  margin: 0;
+}
+
+.cupon-form-fila {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: end;
+  gap: 16px;
+}
+
+.cupon-form input:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.cupon-activo {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 42px;
+  padding-bottom: 10px;
+}
+
+.cupon-form-acciones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.cupon-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.cupon-item {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 14px;
+  padding: 14px;
+  background-color: var(--color-card);
+  border-radius: var(--radius-sm);
+}
+
+.cupon-info {
+  display: flex;
+  flex: 1 1 220px;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.cupon-info span {
+  color: var(--color-text-soft);
+  font-size: 0.88rem;
+}
+
+@media (max-width: 600px) {
+  .cupon-form-fila {
+    grid-template-columns: 1fr;
+  }
+}

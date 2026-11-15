@@ -1,36 +1,38 @@
 # Documentación - proyecto_final_react_ali_tovar
 
-**La Huerta de Ali** es una verdulería online (pre-entrega 2 de React JS) que muestra un catálogo de 12 verduras, permite ver el detalle de cada producto, armar un carrito de compras y finalizar una compra simulada. Usa **React 18 + Vite**, **React Router DOM 6** para la navegación y **Context API** para el estado global del carrito, con **CSS puro** (modo oscuro fijo).
+**La Huerta de Ali** es una verdulería online que muestra un catálogo de verduras, permite ver el detalle de cada producto, armar un carrito de compras y finalizar una compra simulada. Usa **React 18 + Vite**, **React Router DOM 6** para la navegación, **Context API** para el estado global del carrito y **CSS + styled-components** para los estilos.
 
 > **Entrega final:** además de lo descripto abajo, el proyecto ahora usa Firebase (Auth + Firestore).
 > Archivos nuevos: `src/firebase/config.js`, `src/services/productosService.js`, `src/context/AuthContext.jsx`,
 > `src/hooks/useProductos.js`, `src/utils/errores.js`, `src/components/{RutaProtegida,SearchBar,Paginador,ProductoForm,ModalConfirmar,Cargando,Seo}`
-> y las páginas `Login`, `Registro`, `Perfil` y `Panel`. El catálogo ya no se lee de `public/productos.json`
-> sino de la colección `productos` de Firestore (el JSON solo sirve para la carga inicial desde el Panel).
+> y las páginas `Login`, `Registro`, `Perfil`, `Panel` y `GestionCupones`. El catálogo se lee de la colección
+> `productos` de Firestore; `public/productos.json` sirve como respaldo y para la carga inicial desde el Panel.
 > Ver el `README.md` para la configuración de Firebase y el despliegue.
 
 ## Estructura
 
 - `index.html` — Punto de entrada de Vite: define `#root` donde React dibuja toda la app.
-- `package.json` — Configuración del proyecto: nombre, scripts (`dev`, `build`, `preview`) y dependencias.
+- `package.json` — Configuración del proyecto: nombre, scripts (`dev`, `build`, `preview`) y dependencias, incluido `styled-components`.
 - `vite.config.js` — Configuración de Vite: el plugin de React y el `base`, que cambia según el entorno (`/` cuando se levanta el servidor, `/huerta_ali_tovar/` en la build, porque GitHub Pages sirve el proyecto dentro de una subcarpeta del dominio).
 - `src/main.jsx` — Entrada de la app: monta React y envuelve todo con `BrowserRouter` (que recibe `basename={import.meta.env.BASE_URL}` para saber en qué carpeta del dominio está la app) + `CartProvider`.
 - `src/index.css` — Estilos GLOBALES: variables de color (paleta), tipografías, botones genéricos, clases utilitarias (`.container`, `.btn`, `.page`).
-- `src/App.jsx` — Configura las rutas de la aplicación (Home, Productos, Detalle, Carrito, 404).
+- `src/App.jsx` — Configura las rutas y carga cada página bajo demanda. Las rutas privadas incluyen `/panel`, `/perfil` y `/admin/cupones`.
 - `src/context/CartContext.jsx` — Estado GLOBAL del carrito con Context API: agregar, quitar, cambiar cantidad, vaciar y calcular totales.
 - `src/utils/rutasPublicas.js` — Helper `rutaPublica(relativa)`: le antepone el prefijo del proyecto a las rutas de los archivos de `public/` (el JSON del catálogo y las imágenes), que si se escribieran con `/` inicial darían 404 en el sitio publicado.
 - `src/components/Layout/Layout.jsx` — Esqueleto común de todas las páginas: Header + NavBar + contenido (`<Outlet/>`) + Footer.
 - `src/components/Header/Header.jsx` — Encabezado con el logo y el slogan del emprendimiento.
-- `src/components/NavBar/NavBar.jsx` — Barra de navegación con links (`Inicio`, `Productos`) y el carrito.
+- `src/components/NavBar/NavBar.jsx` — Barra de navegación; los enlaces de administración solo aparecen para admins.
 - `src/components/CartWidget/CartWidget.jsx` — Ícono del carrito con un contador de productos agregados.
-- `src/components/Footer/Footer.jsx` — Pie de página: contacto, legales, newsletter simulado y tarjetas del equipo.
+- `src/components/Footer/Footer.jsx` — Pie de página: contacto, legales, newsletter simulado y equipo leído de Firestore, con respaldo local. Las tarjetas usan `styled-components`.
 - `src/components/Item/Item.jsx` — Tarjeta reutilizable que muestra un producto (imagen, nombre, precio, botones).
-- `src/components/ItemListContainer/ItemListContainer.jsx` — Hace `fetch` de `productos.json` (la URL la arma `rutaPublica()`), muestra "cargando", maneja error y dibuja la grilla de `Item`.
+- `src/components/ItemListContainer/ItemListContainer.jsx` — Lee el catálogo mediante `useProductos`, filtra/busca y dibuja la grilla React-Bootstrap de `Item`.
 - `src/components/ItemDetail/ItemDetail.jsx` — Vista de detalle de un producto con selector de cantidad y control de stock.
 - `src/pages/Home.jsx` — Página principal con hero de presentación y el catálogo.
 - `src/pages/Productos.jsx` — Catálogo completo reutilizando `ItemListContainer`.
 - `src/pages/ProductoDetalle.jsx` — Busca el producto por `:id` de la URL y muestra `ItemDetail`.
-- `src/pages/Carrito.jsx` — Página del carrito: lista de items, cantidades, subtotales, total y finalizar compra.
+- `src/pages/Carrito.jsx` — Página del carrito: lista de items, cantidades, subtotales, total y finalización simulada con confirmación.
+- `src/pages/GestionCupones.jsx` — CRUD administrativo de cupones (código, descuento porcentual, vencimiento y estado).
+- `src/services/equipoService.js` y `src/services/cuponesService.js` — Lectura del equipo y CRUD de cupones en Firestore.
 - `src/pages/NotFound.jsx` — Página 404 para cualquier ruta inexistente.
 - `public/productos.json` — Datos estáticos de los 12 productos (nombre, precio, stock, imagen...).
 - `public/verduras/` — Imágenes locales de cada verdura (en `productos.json` se referencian sin barra inicial: `verduras/tomate.jpg`).
@@ -51,14 +53,15 @@ npm run preview  -> previsualiza la compilación de producción localmente
 1. **Componentes funcionales** — Cada archivo `.jsx` exporta una función que devuelve JSX; React lo convierte en HTML.
 2. **Props** — Datos que viajan de un componente padre a un hijo (ej. `producto` que recibe `Item`).
 3. **Estado con `useState`** — Permite que un componente "recuerde" cosas y se vuelva a dibujar cuando cambian (ej. `cargando`, `cantidad`, `carrito`).
-4. **`useEffect`** — Ejecuta efectos secundarios; acá se usa para hacer `fetch` del catálogo al montar el componente.
+4. **`useEffect`** — Ejecuta efectos secundarios; se usa para cargar productos y equipo desde Firestore al montar sus vistas.
 5. **Context API (`createContext` + `useContext`)** — Comparte el carrito entre TODOS los componentes sin pasar props de mano en mano.
 6. **React Router DOM** — `BrowserRouter`, `Routes`, `Route`, `NavLink`, `Link`, `useParams` y `Outlet` para navegar sin recargar la página.
 7. **`.map()` con `key`** — Se usa para convertir un array de productos en una lista de componentes; `key` ayuda a React a identificar cada uno.
-8. **`fetch` de un JSON local** — La app carga los productos desde `public/productos.json` (simula una API). La URL no se escribe a mano: la arma `rutaPublica('productos.json')`.
+8. **Firestore y respaldo JSON** — El catálogo principal se lee de Firestore; `public/productos.json` sirve como respaldo y para la carga inicial. La URL del JSON la arma `rutaPublica('productos.json')`.
 9. **`import.meta.env.BASE_URL` y el prefijo de rutas** — El proyecto se publica en GitHub Pages dentro de la subcarpeta `/huerta_ali_tovar/`, así que una ruta escrita con `/` inicial se resuelve desde la raíz del DOMINIO y da 404. Vite publica el `base` de `vite.config.js` en `import.meta.env.BASE_URL` (`/` en desarrollo, `/huerta_ali_tovar/` en la build) y el helper `rutaPublica()` le antepone ese prefijo a los archivos de `public/`. Como el `BrowserRouter` recibe ese mismo valor en su prop `basename`, React Router compara las rutas de la app contra la URL correcta y no muestra el 404 en todas las páginas.
-10. **`grid` / `flexbox` en CSS** — Para armar grillas de productos, layout de página y diseños responsive.
+10. **Grilla React-Bootstrap y `flexbox`** — `Row` y `Col` arman la grilla responsive del catálogo; el resto del layout combina CSS Grid y Flexbox.
 11. **Variables CSS (`:root`)** — Centralizan colores y fuentes para mantener una paleta consistente.
+12. **`styled-components`** — La tarjeta del equipo del footer se estiliza como componente modular, usando las variables globales de color y espaciado.
 
 ## Árbol de dependencias
 
@@ -71,7 +74,7 @@ index.html
        └─ src/App.jsx                      ✅ configura las rutas
             └─ src/components/Layout/Layout.jsx   ✅ (Layout.css ✅)
                  ├─ Header/Header.jsx             ✅ (Header.css ✅)
-                 ├─ NavBar/NavBar.jsx             ✅ (NavBar.css ✅)
+                 ├─ NavBar/NavBar.jsx             ✅ (NavBar.css ✅; links admin)
                  │    └─ CartWidget/CartWidget.jsx ✅ (CartWidget.css ✅)
                  ├─ Footer/Footer.jsx             ✅ (Footer.css ✅)
                  └─ <Outlet/> → páginas
@@ -82,11 +85,19 @@ index.html
                       │    └─ ItemListContainer.jsx       ✅ (reutilizado)
                       ├─ ProductoDetalle.jsx              ✅
                       │    └─ ItemDetail/ItemDetail.jsx   ✅ (ItemDetail.css ✅)
-                      ├─ Carrito.jsx + Carrito.css        ✅
+                      ├─ Carrito.jsx + Carrito.css        ✅ (confirmación de compra)
+                      ├─ Login.jsx y Registro.jsx          ✅
+                      ├─ Perfil.jsx                       ✅ (ruta protegida)
+                      ├─ Panel.jsx + Panel.css             ✅ (CRUD de productos)
+                      ├─ GestionCupones.jsx + CSS          ✅ (CRUD admin de cupones)
                       └─ NotFound.jsx                     ✅
+src/services/
+  ├─ productosService.js  ✅ CRUD y carga inicial de productos
+  ├─ equipoService.js     ✅ lectura del equipo
+  └─ cuponesService.js    ✅ CRUD de cupones
 src/utils/
   └─ rutasPublicas.js    ✅ arma las rutas de los archivos de public/
-       └─ importado por: ItemListContainer, Item, ItemDetail, ProductoDetalle, Carrito
+       └─ importado por: Panel, Item, ItemDetail, ProductoDetalle, Carrito
 public/
   ├─ productos.json    ✅ datos del catálogo (se lee con fetch)
   └─ verduras/         ✅ imágenes locales
@@ -123,7 +134,8 @@ Variables definidas en `src/index.css` (modo oscuro con acentos pastel):
 - **Catálogo de productos** — Agrega, quita o modifica objetos en `public/productos.json` (respeta `id` únicos). Las imágenes van en `public/verduras/`. Ojo con el campo `imagen`: se escribe RELATIVO a `public/` y SIN barra inicial (`verduras/tomate.jpg`); con una barra inicial el navegador la busca en la raíz del dominio y da 404 en el sitio publicado.
 - **Carpeta donde se publica el sitio** — Está en el `base` de `vite.config.js`. Si el proyecto pasa a servirse en otra subcarpeta (o en la raíz del dominio), cambiá ese valor: `rutaPublica()` y el `basename` del `BrowserRouter` se ajustan solos, sin tocar los componentes ni el JSON.
 - **Rutas** — Agrega un `<Route>` en `src/App.jsx` y crea la página correspondiente en `src/pages/`.
-- **Datos del emprendimiento** — Email, teléfono, Instagram y sede están en `src/components/Footer/Footer.jsx`.
+- **Datos del emprendimiento** — Email, teléfono, Instagram y sede están en `src/components/Footer/Footer.jsx`. El equipo se lee de la colección Firestore `equipo` (campos `nombre`, `rol`, `frase`, `inicial`) y usa los datos locales como respaldo.
+- **Cupones** — Se administran en `/admin/cupones`; la colección `cupones` está restringida a administradores. El alcance actual no valida ni aplica cupones durante el checkout.
 - **Control de stock** — El límite por producto se define en `productos.json` (`stock`) y se respeta en `CartContext`, `ItemDetail` y `Carrito`.
 
 ## Notas

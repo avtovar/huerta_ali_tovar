@@ -6,7 +6,7 @@ Entrega Final de React JS, realizada por Ali Tovar.
 
 La Huerta de Ali es una verdulería online: catálogo con búsqueda y paginación,
 detalle de producto, carrito, registro e inicio de sesión, y un panel de
-administración para gestionar los productos (CRUD) sobre Firebase.
+administración para gestionar productos y cupones sobre Firebase.
 
 ## Tecnologías utilizadas
 
@@ -15,16 +15,18 @@ administración para gestionar los productos (CRUD) sobre Firebase.
 - Context API (`CartContext` y `AuthContext`)
 - Firebase Authentication y Cloud Firestore
 - React-Bootstrap / Bootstrap 5 (grilla responsive, Modal, Spinner)
-- CSS propio por componente (sin estilos en línea ni styled-components)
+- CSS propio por componente y `styled-components` para las tarjetas del equipo
 - React Icons, React Toastify y React Helmet Async
 
 ## Funcionalidades
 
-- **Carrito (Context API):** agregar, eliminar, incrementar/decrementar cantidad (con tope de stock) y vaciar. Se guarda en `localStorage`.
+- **Carrito (Context API):** agregar, eliminar, incrementar/decrementar cantidad (con tope de stock) y vaciar. Se guarda en `localStorage`; finalizar la compra simulada pide confirmación.
 - **Autenticación (Context API + Firebase Auth):** formularios controlados de login y registro, sesión persistente, cierre de sesión y página `/perfil`.
 - **Roles:** `admin` o `user`. El rol se lee del documento `usuarios/{uid}` de Firestore (sin documento = usuario común).
 - **Rutas protegidas:** `/perfil` exige sesión; `/panel` exige sesión y rol `admin`. Sin sesión redirige a `/login` y vuelve a la ruta pedida al ingresar.
-- **Panel de administración (`/panel`):** alta, edición (reutiliza el mismo formulario), eliminación con modal de confirmación, validaciones, spinner de carga, mensajes de error y avisos con toasts.
+- **Panel de administración (`/panel`):** alta, edición (reutiliza el mismo formulario), eliminación con modal de confirmación, validaciones, spinner de carga, mensajes de error y avisos con toasts. Si Firestore está vacío, permite cargar el catálogo inicial antes de editarlo.
+- **Cupones (`/admin/cupones`):** CRUD protegido para administrar código, porcentaje, vencimiento y estado. La aplicación/validación del cupón en el carrito no está incluida.
+- **Equipo:** el footer lee la colección pública `equipo` de Firestore y conserva los datos locales como respaldo.
 - **Búsqueda y paginación:** búsqueda en tiempo real (ignora tildes), filtro por categoría y paginador (8 productos por página).
 - **Diseño responsivo** (móvil, tablet y escritorio) y SEO por página con React Helmet.
 
@@ -39,6 +41,7 @@ administración para gestionar los productos (CRUD) sobre Firebase.
 | `/login`, `/registro` | Acceso y alta de cuenta | Público |
 | `/perfil` | Datos de la cuenta y cierre de sesión | Usuarios logueados |
 | `/panel` | CRUD de productos | Solo administradores |
+| `/admin/cupones` | CRUD de cupones | Solo administradores |
 
 ## Instalación y ejecución local
 
@@ -58,10 +61,12 @@ El catálogo público muestra los productos de `public/productos.json` si Fireba
 
 1. En la [consola de Firebase](https://console.firebase.google.com) crear un proyecto y registrar una **app web**; copiar sus credenciales al archivo `.env` (las variables están en `.env.example`).
 2. **Authentication → Método de acceso:** habilitar *Correo electrónico y contraseña*.
-3. **Firestore Database:** crear la base y, en la pestaña *Reglas*, pegar el contenido de [`firestore.rules`](./firestore.rules) y publicar.
+3. **Firestore Database:** crear la base y, en la pestaña *Reglas*, pegar el contenido actualizado de [`firestore.rules`](./firestore.rules) y publicar.
 4. **Crear el administrador:** registrar una cuenta desde `/registro`, copiar su UID (Authentication → Users) y en Firestore editar/crear el documento `usuarios/<UID>` con el campo `rol` = `admin`.
 5. Iniciar sesión con esa cuenta, entrar a `/panel` y usar el botón **"Cargar los 12 productos iniciales"** (copia `public/productos.json` a la colección `productos`).
-6. Al publicar el sitio, agregar el dominio (por ejemplo `avtovar.github.io`) en *Authentication → Configuración → Dominios autorizados*.
+6. (Opcional) Crear documentos en `equipo` con los campos `nombre`, `rol`, `frase` e `inicial`. Si no hay documentos o Firebase no está disponible, se muestra el equipo de respaldo.
+7. (Opcional) Los cupones se administran desde `/admin/cupones`; sus documentos quedan en la colección privada `cupones`, con `codigo`, `descuento`, `fechaVencimiento` y `activo`.
+8. Al publicar el sitio, agregar el dominio (por ejemplo `avtovar.github.io`) en *Authentication → Configuración → Dominios autorizados*.
 
 ## Despliegue
 
@@ -74,13 +79,13 @@ El catálogo público muestra los productos de `public/productos.json` si Fireba
 ```
 src/
 ├── firebase/config.js        # inicialización de Firebase (lee el .env)
-├── services/productosService.js  # CRUD de Firestore
+├── services/                  # CRUD de productos, equipo y cupones
 ├── context/                  # AuthContext y CartContext
 ├── hooks/useProductos.js     # carga del catálogo (cargando / error)
 ├── components/               # NavBar, Item, ItemListContainer, SearchBar, Paginador,
 │                             # ProductoForm, ModalConfirmar, RutaProtegida, Seo, ...
 ├── pages/                    # Home, Productos, ProductoDetalle, Carrito,
-│                             # Login, Registro, Perfil, Panel, NotFound
+│                             # Login, Registro, Perfil, Panel, GestionCupones, NotFound
 └── utils/                    # rutasPublicas.js y errores.js
 ```
 
@@ -89,6 +94,9 @@ src/
 Para la explicación línea por línea del código (qué hace cada archivo, cada hook,
 cada clase CSS y los conceptos de React que se usan), ver
 [`DOCUMENTACION.md`](./DOCUMENTACION.md).
+
+La [checklist de pruebas manuales](./CHECKLIST_PRUEBAS.md) reúne los flujos para
+verificar antes de la entrega.
 
 ## Datos del emprendimiento
 

@@ -1,8 +1,11 @@
 import { Modal } from 'react-bootstrap'
 import { FaTrash } from 'react-icons/fa'
 
-// Modal de confirmación (se usa antes de eliminar un producto)
-function ModalConfirmar({ mostrar, titulo, mensaje, onConfirmar, onCancelar, procesando }) {
+function ModalConfirmar({
+  mostrar, titulo, mensaje, onConfirmar, onCancelar, procesando,
+  textoConfirmar = 'Sí, eliminar', textoProcesando = 'Eliminando...',
+  icono: Icono = FaTrash, claseAccion = 'btn-peligro',
+}) {
   return (
     <Modal show={mostrar} onHide={onCancelar} centered contentClassName="modal-oscuro">
       <Modal.Header closeButton closeVariant="white">
@@ -13,8 +16,8 @@ function ModalConfirmar({ mostrar, titulo, mensaje, onConfirmar, onCancelar, pro
         <button type="button" className="btn btn-outline" onClick={onCancelar} disabled={procesando}>
           Cancelar
         </button>
-        <button type="button" className="btn btn-peligro" onClick={onConfirmar} disabled={procesando}>
-          <FaTrash aria-hidden="true" /> {procesando ? 'Eliminando...' : 'Sí, eliminar'}
+        <button type="button" className={`btn ${claseAccion}`} onClick={onConfirmar} disabled={procesando}>
+          <Icono aria-hidden="true" /> {procesando ? textoProcesando : textoConfirmar}
         </button>
       </Modal.Footer>
     </Modal>

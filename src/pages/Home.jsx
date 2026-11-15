@@ -36,7 +36,7 @@ function Home() {
       </section>
 
       <section className="container">
-        <ItemListContainer saludo="Nuestras verduras" limite={4} />
+        <ItemListContainer saludo="Nuestras verduras" mostrarTodos />
         {/* ↑ Reutilizamos el contenedor del catálogo; saludo es el título de la sección */}
       </section>
     </div>

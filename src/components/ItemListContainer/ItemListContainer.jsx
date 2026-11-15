@@ -14,9 +14,9 @@ const normalizar = (t) => t.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase
 
 // Props:
 //  - saludo: título de la sección
-//  - limite: si se indica (ej. en Home), muestra solo esa cantidad, sin búsqueda ni paginador
-function ItemListContainer({ saludo, limite }) {
-  const { productos, cargando, error, aviso, recargar } = useProductos()
+//  - mostrarTodos: muestra todos los resultados en una sola página
+function ItemListContainer({ saludo, mostrarTodos = false }) {
+  const { productos, cargando, error, recargar } = useProductos()
   const [busqueda, setBusqueda] = useState('')
   const [categoria, setCategoria] = useState('')
   const [pagina, setPagina] = useState(1)
@@ -37,8 +37,8 @@ function ItemListContainer({ saludo, limite }) {
 
   const totalPaginas = Math.max(1, Math.ceil(filtrados.length / POR_PAGINA))
   const paginaActual = Math.min(pagina, totalPaginas)
-  const visibles = limite
-    ? filtrados.slice(0, limite)
+  const visibles = mostrarTodos
+    ? filtrados
     : filtrados.slice((paginaActual - 1) * POR_PAGINA, paginaActual * POR_PAGINA)
 
   // Al cambiar un filtro volvemos a la página 1
@@ -48,9 +48,8 @@ function ItemListContainer({ saludo, limite }) {
   return (
     <div className="item-list-container">
       {saludo && <h2 className="section-title">{saludo}</h2>}
-      {aviso && <p className="mensaje mensaje-aviso" role="status">{aviso}</p>}
 
-      {!limite && !cargando && !error && (
+      {!cargando && !error && (
         <SearchBar
           busqueda={busqueda}
           onBusqueda={onBusqueda}
@@ -83,7 +82,7 @@ function ItemListContainer({ saludo, limite }) {
               </Col>
             ))}
           </Row>
-          {!limite && (
+          {!mostrarTodos && (
             <Paginador pagina={paginaActual} totalPaginas={totalPaginas} onCambiar={setPagina} />
           )}
         </>

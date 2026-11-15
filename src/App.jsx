@@ -4,18 +4,19 @@ import { Routes, Route } from 'react-router-dom'
 import Layout from './components/Layout/Layout'
 import RutaProtegida from './components/RutaProtegida/RutaProtegida'
 
-import Home from './pages/Home'
-import Productos from './pages/Productos'
-import ProductoDetalle from './pages/ProductoDetalle'
-import Carrito from './pages/Carrito'
-import Login from './pages/Login'
-import Registro from './pages/Registro'
 import Cargando from './components/Cargando/Cargando'
 import NotFound from './pages/NotFound'
 
-// Code splitting: el Panel y el Perfil se descargan solo cuando se entra a esas rutas
+// Las páginas se descargan al entrar a la ruta correspondiente.
+const Home = lazy(() => import('./pages/Home'))
+const Productos = lazy(() => import('./pages/Productos'))
+const ProductoDetalle = lazy(() => import('./pages/ProductoDetalle'))
+const Carrito = lazy(() => import('./pages/Carrito'))
+const Login = lazy(() => import('./pages/Login'))
+const Registro = lazy(() => import('./pages/Registro'))
 const Perfil = lazy(() => import('./pages/Perfil'))
 const Panel = lazy(() => import('./pages/Panel'))
+const GestionCupones = lazy(() => import('./pages/GestionCupones'))
 
 function App() {
   return (
@@ -43,6 +44,14 @@ function App() {
           element={
             <RutaProtegida rolesPermitidos={['admin']}>
               <Panel />
+            </RutaProtegida>
+          }
+        />
+        <Route
+          path="admin/cupones"
+          element={
+            <RutaProtegida rolesPermitidos={['admin']}>
+              <GestionCupones />
             </RutaProtegida>
           }
         />

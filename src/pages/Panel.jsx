@@ -6,6 +6,7 @@ import {
   crearProducto, actualizarProducto, eliminarProducto, cargarProductosIniciales, obtenerProductosIniciales,
 } from '../services/productosService'
 import { mensajeError } from '../utils/errores'
+import { rutaPublica } from '../utils/rutasPublicas'
 import ProductoForm from '../components/ProductoForm/ProductoForm'
 import ModalConfirmar from '../components/ModalConfirmar/ModalConfirmar'
 import Cargando from '../components/Cargando/Cargando'
