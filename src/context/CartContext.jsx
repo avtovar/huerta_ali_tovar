@@ -1,104 +1,142 @@
 import { createContext, useContext, useEffect, useState } from 'react'
-// ↑ createContext: crea un "estado compartido" para toda la app
-// ↑ useContext: hook para leer ese estado compartido desde cualquier componente
-// ↑ useState: estado local (en este caso, la lista del carrito)
+// ↑ createContext: crea un "contexto" para compartir el carrito entre todos los componentes
+//    sin tener que pasar props de componente en componente (evita el "prop drilling").
+// ↑ useContext: hook que lee el valor que proporciona el CartContext.Provider.
+// ↑ useState: hook de React para gestionar estado local (en este caso, el array del carrito).
 
 const CartContext = createContext()
-// ↑ Creamos el contexto vacío. Después lo "llenamos" con el provider
+// ↑ Creamos un contexto vacío. Más adelante lo "llenaremos" con el Provider que está más abajo.
 
 export function CartProvider({ children }) {
-  // ↑ Provider: el componente que ENVUELVE la app y le da acceso al carrito
-  // ↑ children = todo lo que esté adentro de <CartProvider>...</CartProvider>
+  // ↑ CartProvider: componente que ENVUELLE la app (o una parte de ella) y le dé acceso
+  //    al carrito global. Cualquier hijo de este provider puede usar useCart().
 
   const [carrito, setCarrito] = useState(() => {
-    // Recupera el carrito guardado para que no se pierda al recargar la página
+    // ↑ Usamos useState con una función para inicializar el carrito desde localStorage.
+    //    Así el carrito persiste aunque el usuario recargue la página.
+
     try {
+      // Intentamos recuperar el carrito guardado en localStorage.
+      // localStorage.getItem('carrito') devuelve una string, o null si no hay nada.
       return JSON.parse(localStorage.getItem('carrito')) || []
     } catch {
+      // Si localStorage falla o no tiene datos, arrancamos con carrito vacío [].
       return []
     }
   })
+  // ↑ carrito: array que guarda los productos agregados.
+  //    Cada elemento tiene al menos: id, nombre, precio, unidad, stock, cantidad.
+  //    Ejemplo: [{ id: 1, nombre: "Tomate", precio: 2.5, unidad: "kg", cantidad: 3, stock: 10 }]
+  // ↑ setCarrito: función que React usa para actualizar el estado y volver a dibujar la app.
 
   useEffect(() => {
+    // ↑ useEffect: cada vez que el carrito cambia, guardamos la copia en localStorage.
+    //    Esto persiste el carrito aunque el usuario recargue o cierre el navegador.
+
     try {
       localStorage.setItem('carrito', JSON.stringify(carrito))
     } catch {
-      // si el navegador bloquea localStorage, el carrito sigue funcionando en memoria
+      // Si el navegador bloquea localStorage o hay algún error, el carrito sigue
+      // funcionando solo en memoria (se perderá al recargar, pero no romperá la app).
     }
   }, [carrito])
-  // ↑ carrito: array de productos agregados, ej. [{ id, nombre, cantidad, precio... }]
-  // ↑ setCarrito: la función para actualizar ese array (React vuelve a dibujar la app)
+  // ↑ Nota: la dependencia [carrito] significa que este efecto se ejecuta cada vez
+  //    que el carrito cambia (cada vez que se agrega, quita o cambia la cantidad).
 
   const addToCart = (producto, cantidad = 1) => {
-    // ↑ Agrega un producto al carrito, respetando el stock disponible
+    // ↑ Agrega un producto al carrito, respetando el stock disponible.
+    //    El parámetro "producto" es el objeto completo que viene de los items del catálogo.
+    //    El parámetro "cantidad" cuántas unidades se quieren agregar (default: 1).
+
     setCarrito((prev) => {
-      // ↑ prev = el carrito tal como estaba antes de este cambio
+      // ↑ Usamos la forma funcional de setCarrito porque el nuevo valor depende del previo.
+      // ↑ prev = el carrito tal como estaba antes de este cambio (patrón de inmutabilidad de React).
+
       const yaExiste = prev.find((item) => item.id === producto.id)
-      // ↑ ¿El producto ya está en el carrito? Lo buscamos por id
+      // ↑ ¿El producto ya está en el carrito? Lo buscamos por su id único.
+      //    .find devuelve el objeto si existe, o undefined si no.
+
       const cantidadSolicitada = Math.max(1, cantidad)
-      // ↑ Evitamos cantidades menores que 1
+      // ↑ Evitamos que el usuario agregue cantidades menores a 1.
+      //    Math.max(1, cantidad) asegura que el mínimo sea 1.
 
       if (yaExiste) {
-        // ↑ Si ya estaba, sumamos la cantidad nueva...
+        // ↑ Si el producto YA estaba en el carrito, sumamos la cantidad nueva a la existente.
         return prev.map((item) =>
           item.id === producto.id
             ? {
+                // ↑ Copiamos el item tal como estaba, pero actualizamos la cantidad.
                 ...item,
-                // ↑ Copiamos el item tal como estaba...
                 cantidad: Math.min(
                   item.cantidad + cantidadSolicitada,
                   producto.stock
                 ),
-                // ↑ ...pero la cantidad nueva queda limitada al stock (nunca pasa de ahí)
+                // ↑ ...pero la cantidad nueva queda limitada al stock disponible del producto.
+                //    Math.min(..., producto.stock) nunca deja pasar del stock máximo.
               }
             : item
         )
+      // Si el producto NO estaba en el carrito, lo agregamos como un nuevo elemento.
       }
 
       return [
         ...prev,
-        // ↑ Si no estaba, agregamos un item nuevo al final del array
+        // ↑ Spread operator: copia todos los items que ya estaban en el carrito.
         { ...producto, cantidad: Math.min(cantidadSolicitada, producto.stock) },
-        // ↑ Copiamos todas las props del producto y le asignamos la cantidad (con tope de stock)
+        // ↑ Agregamos el producto nuevo con la cantidad solicitada (con tope de stock).
+        //    Spread { ...producto } copia todas las propiedades del producto (id, nombre, precio, etc.)
+        //    y le asignamos la cantidad con el tope.
       ]
     })
   }
 
   const removeFromCart = (id) => {
-    // ↑ Quita un producto del carrito filtrando por id
+    // ↑ Quita un producto del carrito filtrando por id.
+    //    Elimina TODAS las unidades de ese producto, no solo una.
     setCarrito((prev) => prev.filter((item) => item.id !== id))
-    // ↑ .filter devuelve un nuevo array SIN el item que tenga ese id
+    // ↑ .filter devuelve un nuevo array SIN el item que tenga ese id.
+    //    Si el producto tenía cantidad > 1, se quita por completo.
   }
 
   const updateCantidad = (id, cantidad) => {
-    // ↑ Cambia la cantidad de un producto ya agregado
+    // ↑ Cambia la cantidad de un producto ya agregado en el carrito.
+    //    Si quantity < 1, no hace nada (para quitar se usa removeFromCart).
     if (cantidad < 1) return
-    // ↑ No permitimos bajar de 1 (para quitar se usa removeFromCart)
+    // ↑ No permitimos bajar de 1 cantidad. Si el usuario quiere quitarlo, usa removeFromCart.
+
     setCarrito((prev) =>
       prev.map((item) =>
         item.id === id
           ? { ...item, cantidad: Math.min(cantidad, item.stock) }
-          // ↑ Actualizamos la cantidad del item indicado, con tope de stock
+          // ↑ Actualizamos la cantidad del item indicado, con tope de stock.
+          //    Si la nueva cantidad es mayor que el stock disponible, se limita al stock.
           : item
       )
     )
   }
 
   const clearCart = () => setCarrito([])
-  // ↑ Vacía el carrito completo (deja el array en [])
+  // ↑ Vacía el carrito completo (deja el array en []).
+  //    Esto también dispara el useEffect de guardar en localStorage, así que se pierde
+  //    el carrito guardado y queda vacío.
 
   const getCantidadTotal = () =>
-    // ↑ Suma TODAS las cantidades del carrito (para el contador del widget 🛒)
+    // ↑ Suma TODAS las cantidades del carrito (para el contador del widget 🛒 en la NavBar).
     carrito.reduce((acc, item) => acc + item.cantidad, 0)
-    // ↑ reduce acumula: arranca en 0 y va sumando item.cantidad de cada producto
+    // ↑ reduce: método de arrays que acumula un valor.
+    //    Arranca en 0 (acc) y va sumando item.cantidad de cada producto del carrito.
 
   const getTotal = () =>
-    // ↑ Calcula el total a pagar: cantidad × precio de cada producto, sumando todo
+    // ↑ Calcula el total a pagar: cantidad × precio de cada producto, sumando todo.
     carrito.reduce((acc, item) => acc + item.cantidad * item.precio, 0)
+    //    reduce acumula: arranca en 0 y suma (cantidad × precio) de cada item.
 
   return (
-    <CartContext.Provider
-      // ↑ El provider "expone" el valor del contexto a todos los componentes hijos
+    <CartContext.Provider>
+      // ↑ CartContext.Provider: "expone" el valor del contexto a todos los componentes hijos.
+      //    Cualquier componente que use useCart() dentro de este provider tendrá acceso
+      //    a todas estas propiedades.
+
       value={{
         carrito,
         addToCart,
@@ -108,15 +146,18 @@ export function CartProvider({ children }) {
         getCantidadTotal,
         getTotal,
       }}
-    >
-      {children}
-      {/* ↑ Aquí se dibujan todos los componentes que están dentro del provider */}
+      {/* ↑ Aquí se dibujan todos los componentes que están dentro del provider CartProvider.
+         Ejemplos: CartWidget, Item, ItemDetail, Carrito, etc. */}
     </CartContext.Provider>
   )
 }
 
 export function useCart() {
-  // ↑ Hook personalizado: la forma cómoda de leer el carrito desde cualquier componente
+  // ↑ Hook personalizado: la forma cómoda de leer el carrito y sus funciones desde
+  //    cualquier componente dentro de CartProvider.
+  //    En lugar de escribir useContext(CartContext) directamente, se usa este hook.
   return useContext(CartContext)
-  // ↑ useContext devuelve TODO el value que pasamos arriba (carrito + funciones)
+  // ↑ useContext devuelve TODO el value que pasamos arriba:
+  //    { carrito, addToCart, removeFromCart, updateCantidad, clearCart,
+  //    getCantidadTotal, getTotal }
 }

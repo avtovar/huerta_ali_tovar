@@ -8,13 +8,8 @@ import { useProductos } from '../../hooks/useProductos'
 import './ItemListContainer.css'
 
 const POR_PAGINA = 8
+const normalizar = (texto) => texto.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase()
 
-// Quita tildes y pasa a minúsculas para que "limon" encuentre "Limón"
-const normalizar = (t) => t.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase()
-
-// Props:
-//  - saludo: título de la sección
-//  - mostrarTodos: muestra todos los resultados en una sola página
 function ItemListContainer({ saludo, mostrarTodos = false }) {
   const { productos, cargando, error, recargar } = useProductos()
   const [busqueda, setBusqueda] = useState('')
@@ -22,16 +17,18 @@ function ItemListContainer({ saludo, mostrarTodos = false }) {
   const [pagina, setPagina] = useState(1)
 
   const categorias = useMemo(
-    () => [...new Set(productos.map((p) => p.categoria))].sort((a, b) => a.localeCompare(b, 'es')),
+    () => [...new Set(productos.map((producto) => producto.categoria))]
+      .sort((a, b) => a.localeCompare(b, 'es')),
     [productos]
   )
 
   const filtrados = useMemo(() => {
-    const q = normalizar(busqueda.trim())
-    return productos.filter(
-      (p) =>
-        (!categoria || p.categoria === categoria) &&
-        (!q || normalizar(p.nombre).includes(q) || normalizar(p.categoria).includes(q))
+    const consulta = normalizar(busqueda.trim())
+    return productos.filter((producto) =>
+      (!categoria || producto.categoria === categoria) &&
+      (!consulta ||
+        normalizar(producto.nombre).includes(consulta) ||
+        normalizar(producto.categoria).includes(consulta))
     )
   }, [productos, busqueda, categoria])
 
@@ -41,9 +38,15 @@ function ItemListContainer({ saludo, mostrarTodos = false }) {
     ? filtrados
     : filtrados.slice((paginaActual - 1) * POR_PAGINA, paginaActual * POR_PAGINA)
 
-  // Al cambiar un filtro volvemos a la página 1
-  const onBusqueda = (v) => { setBusqueda(v); setPagina(1) }
-  const onCategoria = (v) => { setCategoria(v); setPagina(1) }
+  const onBusqueda = (valor) => {
+    setBusqueda(valor)
+    setPagina(1)
+  }
+
+  const onCategoria = (valor) => {
+    setCategoria(valor)
+    setPagina(1)
+  }
 
   return (
     <div className="item-list-container">
@@ -74,7 +77,6 @@ function ItemListContainer({ saludo, mostrarTodos = false }) {
         </p>
       ) : (
         <>
-          {/* Grilla React-Bootstrap: 1 columna en móvil, 2 en tablet, 4 en escritorio */}
           <Row className="g-4 mt-1">
             {visibles.map((producto) => (
               <Col key={producto.id} xs={12} sm={6} lg={3}>
@@ -83,7 +85,11 @@ function ItemListContainer({ saludo, mostrarTodos = false }) {
             ))}
           </Row>
           {!mostrarTodos && (
-            <Paginador pagina={paginaActual} totalPaginas={totalPaginas} onCambiar={setPagina} />
+            <Paginador
+              pagina={paginaActual}
+              totalPaginas={totalPaginas}
+              onCambiar={setPagina}
+            />
           )}
         </>
       )}

@@ -13,11 +13,9 @@ import Cargando from '../components/Cargando/Cargando'
 import Seo from '../components/Seo/Seo'
 import './Panel.css'
 
-// Panel de administración (ruta protegida, solo rol admin): CRUD de productos en Firestore
 function Panel() {
   const { productos, cargando, error, aviso, catalogoRespaldo, coleccionVacia, recargar } = useProductos()
   const [productoAEditar, setProductoAEditar] = useState(null)
-  // ↑ null = el formulario crea; con un producto = el mismo formulario edita
   const [mostrarForm, setMostrarForm] = useState(false)
   const [guardando, setGuardando] = useState(false)
   const [productoABorrar, setProductoABorrar] = useState(null)
@@ -59,14 +57,12 @@ function Panel() {
       await recargar()
     } catch (e) {
       console.error('Error al eliminar:', e)
-      setProductoABorrar(null)
       setErrorOperacion(mensajeError(e))
     } finally {
       setBorrando(false)
     }
   }
 
-  // Copia los productos de public/productos.json a Firestore (solo útil la primera vez)
   const handleCargaInicial = async () => {
     setErrorOperacion('')
     setCargandoInicial(true)
@@ -118,8 +114,7 @@ function Panel() {
         <div className="panel-vacio">
           <p role="status">{aviso}</p>
           {coleccionVacia && (
-            <button type="button" className="btn btn-secondary" onClick={handleCargaInicial}
-              disabled={cargandoInicial}>
+            <button type="button" className="btn btn-secondary" onClick={handleCargaInicial} disabled={cargandoInicial}>
               <FaDatabase aria-hidden="true" />
               {cargandoInicial ? 'Cargando...' : 'Cargar los 12 productos iniciales'}
             </button>
