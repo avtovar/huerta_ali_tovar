@@ -3,10 +3,9 @@ import { toast } from 'react-toastify'
 import { FaEdit, FaTrash, FaPlus, FaDatabase } from 'react-icons/fa'
 import { useProductos } from '../hooks/useProductos'
 import {
-  crearProducto, actualizarProducto, eliminarProducto, cargarProductosIniciales,
+  crearProducto, actualizarProducto, eliminarProducto, cargarProductosIniciales, obtenerProductosIniciales,
 } from '../services/productosService'
 import { mensajeError } from '../utils/errores'
-import { rutaPublica } from '../utils/rutasPublicas'
 import ProductoForm from '../components/ProductoForm/ProductoForm'
 import ModalConfirmar from '../components/ModalConfirmar/ModalConfirmar'
 import Cargando from '../components/Cargando/Cargando'
@@ -15,13 +14,14 @@ import './Panel.css'
 
 // Panel de administración (ruta protegida, solo rol admin): CRUD de productos en Firestore
 function Panel() {
-  const { productos, cargando, error, recargar } = useProductos()
+  const { productos, cargando, error, aviso, catalogoRespaldo, coleccionVacia, recargar } = useProductos()
   const [productoAEditar, setProductoAEditar] = useState(null)
   // ↑ null = el formulario crea; con un producto = el mismo formulario edita
   const [mostrarForm, setMostrarForm] = useState(false)
   const [guardando, setGuardando] = useState(false)
   const [productoABorrar, setProductoABorrar] = useState(null)
   const [borrando, setBorrando] = useState(false)
+  const [cargandoInicial, setCargandoInicial] = useState(false)
   const [errorOperacion, setErrorOperacion] = useState('')
 
   const abrirAlta = () => { setProductoAEditar(null); setMostrarForm(true); setErrorOperacion('') }
@@ -68,15 +68,17 @@ function Panel() {
   // Copia los productos de public/productos.json a Firestore (solo útil la primera vez)
   const handleCargaInicial = async () => {
     setErrorOperacion('')
+    setCargandoInicial(true)
     try {
-      const res = await fetch(rutaPublica('productos.json'))
-      const lista = await res.json()
+      const lista = await obtenerProductosIniciales()
       await cargarProductosIniciales(lista)
       toast.success(`${lista.length} productos cargados`)
       await recargar()
     } catch (e) {
       console.error('Error en la carga inicial:', e)
       setErrorOperacion(mensajeError(e))
+    } finally {
+      setCargandoInicial(false)
     }
   }
 
@@ -85,7 +87,7 @@ function Panel() {
       <Seo titulo="Panel de administración" />
       <div className="panel-encabezado">
         <h2>Panel de administración</h2>
-        {!mostrarForm && (
+        {!mostrarForm && !cargando && !error && !catalogoRespaldo && (
           <button type="button" className="btn btn-primary" onClick={abrirAlta}>
             <FaPlus aria-hidden="true" /> Nuevo producto
           </button>
@@ -110,6 +112,17 @@ function Panel() {
         <div role="alert" className="mensaje mensaje-error">
           <p>{error}</p>
           <button type="button" className="btn btn-outline" onClick={recargar}>Reintentar</button>
+        </div>
+      ) : catalogoRespaldo ? (
+        <div className="panel-vacio">
+          <p role="status">{aviso}</p>
+          {coleccionVacia && (
+            <button type="button" className="btn btn-secondary" onClick={handleCargaInicial}
+              disabled={cargandoInicial}>
+              <FaDatabase aria-hidden="true" />
+              {cargandoInicial ? 'Cargando...' : 'Cargar los 12 productos iniciales'}
+            </button>
+          )}
         </div>
       ) : productos.length === 0 ? (
         <div className="panel-vacio">

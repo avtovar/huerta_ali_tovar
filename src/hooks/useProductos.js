@@ -9,14 +9,19 @@ export function useProductos() {
   const [cargando, setCargando] = useState(true)
   const [error, setError] = useState('')
   const [aviso, setAviso] = useState('')
+  const [catalogoRespaldo, setCatalogoRespaldo] = useState(false)
+  const [coleccionVacia, setColeccionVacia] = useState(false)
 
   const recargar = useCallback(async () => {
     setCargando(true)
     setError('')
     setAviso('')
+    setCatalogoRespaldo(false)
+    setColeccionVacia(false)
     try {
       if (!firebaseConfigurado) {
         setProductos(await obtenerProductosIniciales())
+        setCatalogoRespaldo(true)
         setAviso('Mostrando el catálogo inicial. Configurá Firebase para administrar productos.')
         return
       }
@@ -28,11 +33,14 @@ export function useProductos() {
           return
         }
 
+        setColeccionVacia(true)
         setProductos(await obtenerProductosIniciales())
+        setCatalogoRespaldo(true)
         setAviso('Firestore todavía no tiene productos; se muestra el catálogo inicial.')
       } catch (e) {
         console.error('Error al cargar productos de Firestore:', e)
         setProductos(await obtenerProductosIniciales())
+        setCatalogoRespaldo(true)
         setAviso(`No se pudo cargar Firestore (${mensajeError(e)}). Se muestra el catálogo inicial.`)
       }
     } catch (e) {
@@ -47,5 +55,5 @@ export function useProductos() {
     recargar()
   }, [recargar])
 
-  return { productos, cargando, error, aviso, recargar }
+  return { productos, cargando, error, aviso, catalogoRespaldo, coleccionVacia, recargar }
 }
