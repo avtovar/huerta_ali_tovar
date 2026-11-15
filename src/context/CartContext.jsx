@@ -132,11 +132,7 @@ export function CartProvider({ children }) {
     //    reduce acumula: arranca en 0 y suma (cantidad × precio) de cada item.
 
   return (
-    <CartContext.Provider>
-      // ↑ CartContext.Provider: "expone" el valor del contexto a todos los componentes hijos.
-      //    Cualquier componente que use useCart() dentro de este provider tendrá acceso
-      //    a todas estas propiedades.
-
+    <CartContext.Provider
       value={{
         carrito,
         addToCart,
@@ -146,8 +142,8 @@ export function CartProvider({ children }) {
         getCantidadTotal,
         getTotal,
       }}
-      {/* ↑ Aquí se dibujan todos los componentes que están dentro del provider CartProvider.
-         Ejemplos: CartWidget, Item, ItemDetail, Carrito, etc. */}
+    >
+      {children}
     </CartContext.Provider>
   )
 }
