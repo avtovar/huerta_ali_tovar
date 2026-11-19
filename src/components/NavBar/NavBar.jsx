@@ -28,23 +28,23 @@ import './NavBar.css'
 //    La responsividad (cómo se apilan los links en móvil) está en este CSS.
 
 function NavBar() {
-  // ↑ Componente de navegación principal que muestra links, botones de usuario y el carrito.
-  //    Se incluye en Layout.jsx por lo que aparece en TODAS las páginas.
+// ↑ Componente de navegación principal que muestra links, botones de usuario y el carrito.
+//    Se incluye en Layout.jsx por lo que aparece en TODAS las páginas.
   const { usuario, esAdmin, logout } = useAuth()
-  // ↑ usuario: objeto de sesión de Firebase (null si nadie está logueado).
-  //    Tiene propiedades: uid, email, displayName, etc.
-  //    Si es null, mostramos links de "Ingresar/Registrarse".
-  // ↓ esAdmin: booleano que indica si el usuario tiene rol 'admin'.
-  //    Se lee del documento 'usuarios/{uid}' en Firestore. Si es true, muestra enlaces
-  //    extra de "Panel" y "Cupones".
-  // ↓ logout: función para cerrar la sesión (signOut de Firebase).
+// ↑ usuario: objeto de sesión de Firebase (null si nadie está logueado).
+//    Tiene propiedades: uid, email, displayName, etc.
+//    Si es null, mostramos links de "Ingresar/Registrarse".
+// ↓ esAdmin: booleano que indica si el usuario tiene rol 'admin'.
+//    Se lee del documento 'usuarios/{uid}' en Firestore. Si es true, muestra enlaces
+//    extra de "Panel" y "Cupones".
+// ↓ logout: función para cerrar la sesión (signOut de Firebase).
 
   const navigate = useNavigate()
-  // ↑ useNavigate: hook de React Router para programar navegación imperativa.
-  //    Ejemplo: navigate('/login') o navigate('/', { replace: true }).
+// ↑ useNavigate: hook de React Router para programar navegación imperativa.
+//    Ejemplo: navigate('/login') o navigate('/', { replace: true }).
 
   const handleLogout = async () => {
-    // ↑ Función que se ejecuta al hacer clic en "Cerrar sesión".
+// ↑ Función que se ejecuta al hacer clic en "Cerrar sesión".
     await logout()
     //    Cierra la sesión en Firebase Auth y establece usuario = null en el contexto.
     toast.info('Sesión cerrada')
@@ -53,38 +53,34 @@ function NavBar() {
     //    Redirige a la página de inicio. Usamos navigation imperativa.
   }
 
-  const linkClass = ({ isActive }) => 'nav-link' + (isActive ? ' nav-link-active' : '')
-  // ↑ función auxiliar que genera la clase CSS para cada link.
-  //    Si el link está activo (estamos en esa ruta), agrega 'nav-link-active' para
-  //    resaltar visualmente el menú actual.
+//   const linkClass = ({ isActive }) => 'nav-link' + (isActive ? ' nav-link-active' : '')
+//   // ↑ función auxiliar que genera la clase CSS para cada link.
+//   //    Si el link está activo (estamos en esa ruta), agrega 'nav-link-active' para
+//   //    resaltar visualmente el menú actual.
 
   return (
     <nav className="navbar" aria-label="Navegación principal">
       <div className="container navbar-inner">
         <ul className="nav-links">
-          <li><NavLink to="/" end className={linkClass}>Inicio</NavLink></li>
-          <li><NavLink to="/productos" className={linkClass}>Productos</NavLink></li>
+          <li><NavLink to="/" end>Inicio</NavLink></li>
+          <li><NavLink to="/productos">Productos</NavLink></li>
           {esAdmin && (
             <>
-              <li><NavLink to="/panel" className={linkClass}><FaTools aria-hidden="true" /> Panel</NavLink></li>
-              <li><NavLink to="/admin/cupones" className={linkClass}><FaTags aria-hidden="true" /> Cupones</NavLink></li>
+              <li><NavLink to="/panel"><FaTools aria-hidden="true" /> Panel</NavLink></li>
+              <li><NavLink to="/admin/cupones"><FaTags aria-hidden="true" /> Cupones</NavLink></li>
             </>
           )}
         </ul>
         <div className="nav-usuario">
           {usuario ? (
             <>
-              <NavLink to="/perfil" className={linkClass}>
-                <FaUser aria-hidden="true" /> <span className="nav-nombre">{usuario.displayName || 'Mi perfil'}</span>
-              </NavLink>
+              <NavLink to="/perfil"><FaUser aria-hidden="true" /> <span className="nav-nombre">{usuario.displayName || 'Mi perfil'}</span></NavLink>
               <button type="button" className="nav-boton" onClick={handleLogout} aria-label="Cerrar sesión">
                 <FaSignOutAlt aria-hidden="true" /> <span className="nav-nombre">Salir</span>
               </button>
             </>
           ) : (
-            <NavLink to="/login" className={linkClass}>
-              <FaSignInAlt aria-hidden="true" /> Ingresar
-            </NavLink>
+            <NavLink to="/login"><FaSignInAlt aria-hidden="true" /> Ingresar</NavLink>
           )}
           <CartWidget />
         </div>

@@ -1,22 +1,21 @@
 import { Link } from 'react-router-dom'
-// ↑ Link: crea enlaces de navegación SIN recargar la página (SPA).
-//    Al hacer clic, React actualiza la vista sin recargar el navegador.
+// ↑ Link: crea enlaces de navegación SPA sin recargar la página.
 
 import './Header.css'
 // ↑ Estilos propios del encabezado.
 //    Usa variables CSS de :root (paleta de colores) y clases .container, .header-brand, etc.
 
 function Header() {
-  // ↑ Componente estático: este componente no tiene estado propio (no usa useState).
-    //    Solo muestra fijo el logo y el slogan. Es el "cartel" de la app que
-    //    siempre está visible en la parte superior.
+// ↑ Componente estático: este componente no tiene estado propio (no usa useState).
+//    Solo muestra fijo el logo y el slogan. Es el "cartel" de la app que
+//    siempre está visible en la parte superior.
   return (
     <header className="header">
       {/* ↑ Etiqueta semántica <header>: representa el encabezado de la página. */}
       <div className="container header-inner">
         {/* ↑ container: clase utilitaria que centra el contenido horizontalmente.
            width máxima y margin auto, definida en Header.css. -->
-         header-inner: agrupa el logo y el título en una fila sola usando flexbox. */}
+          header-inner: agrupa el logo y el título en una fila sola usando flexbox. */}
         <Link to="/" className="header-brand">
           {/* ↑ Link: componente de navegación SPA que lleva a la ruta '/' (inicio).
              className "header-brand" lo estiliza como marca principal. */}
