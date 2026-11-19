@@ -14,6 +14,8 @@ import { obtenerEquipo } from '../../services/equipoService'
 // ↑ obtenerEquipo: función que lee la colección 'equipo' de Firestore.
 //    Trae los datos del equipo para mostrarlos en el footer.
 
+import './Footer.css'
+
 const TeamCard = styled.article`
   background-color: var(--color-card);
   border-radius: var(--radius-md);
