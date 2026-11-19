@@ -73,29 +73,19 @@ export function AuthProvider({ children }) {
     return cancelar
   }, [])
 
-//   const login = (email, password) => signInWithEmailAndPassword(auth, email, password)
-//   // ↑ login: función para iniciar sesión con email y contraseña.
-//    Usa las credenciales de Firebase Auth.
+  const login = (email, password) => signInWithEmailAndPassword(auth, email, password)
 
-//   const registro = async (nombre, email, password) => {
-//     // ↑ registro: función para crear una nueva cuenta.
-//     const cred = await createUserWithEmailAndPassword(auth, email, password)
-//     // Crea el usuario en Firebase Auth y devuelve el credential (tiene .user con uid, etc.)
+  const registro = async (nombre, email, password) => {
+    const cred = await createUserWithEmailAndPassword(auth, email, password)
+    await updateProfile(cred.user, { displayName: nombre })
+    await setDoc(doc(db, 'usuarios', cred.user.uid), {
+      nombre, email, rol: 'user', creadoEn: serverTimestamp(),
+    })
+    setUsuario({ ...cred.user, displayName: nombre })
+    setRol('user')
+  }
 
-//     await updateProfile(cred.user, { displayName: nombre })
-//     // Actualiza el perfil en Firebase Auth con el nombre que el usuario proporcionó.
-
-//     // Perfil con rol 'user'. El rol 'admin' se asigna a mano desde la consola de Firebase.
-//     // Creamos el documento en la colección 'usuarios' con el UID del usuario autenticado.
-//     await setDoc(doc(db, 'usuarios', cred.user.uid), {
-//       nombre, email, rol: 'user', creadoEn: serverTimestamp(),
-//     })
-//     setUsuario({ ...cred.user, displayName: nombre })
-//     setRol('user')
-//   }
-
-//   const logout = () => signOut(auth)
-//   // ↑ logout: cierra la sesión de Firebase Auth. El usuario vuelve a ser null.
+  const logout = () => signOut(auth)
 
   return (
     <AuthContext.Provider

@@ -74,12 +74,12 @@ function Footer() {
     //    Cuando el componente se desmonta, dejamos de escuchar cambios para evitar fugas.
   }, [])
 
-//   const handleSubmit = (event) => {
-//     event.preventDefault()
-//     if (!email) return
-//     setEnviado(true)
-//     setEmail('')
-//   }
+  const handleSubmit = (event) => {
+    event.preventDefault()
+    if (!email) return
+    setEnviado(true)
+    setEmail('')
+  }
 
   return (
     <footer className="footer">
